@@ -26,6 +26,7 @@ runs:
 
     - name: Generate analysis report
       run: mkdir -p ${{ inputs.prefix }}/analyze/${{ inputs.default-branch }} && node dist/index.js
+      shell: bash
 
     - name: Upload report
       uses: actions/upload-artifact@v3
@@ -33,43 +34,43 @@ runs:
         name: bundle-sizes
         path: ${{ inputs.prefix }}/analyze/${{ inputs.default-branch }}/report.json
 
-      # A bit of find & replace on our output text for displaying properly. Save this to an Action variable.
-      - name: Get comment body
-        id: get-comment-body
-        if: success() && github.event.number
-        run: |
-          body=$(cat ${{ inputs.prefix }}/analyze/report.txt)
-          body="${body//'%'/'%25'}"
-          body="${body//$'\n'/'%0A'}"
-          body="${body//$'\r'/'%0D'}"
-          echo ::set-output name=body::$body
+    # A bit of find & replace on our output text for displaying properly. Save this to an Action variable.
+    - name: Get comment body
+      id: get-comment-body
+      if: success() && github.event.number
+      run: |
+        body=$(cat ${{ inputs.prefix }}/analyze/report.txt)
+        body="${body//'%'/'%25'}"
+        body="${body//$'\n'/'%0A'}"
+        body="${body//$'\r'/'%0D'}"
+        echo ::set-output name=body::$body
+      shell: bash
 
-      # Looks for a comment with <!-- GH BOT --> somewhere in its body.
-      - name: Find Comment
-        uses: peter-evans/find-comment@v2
-        if: success() && github.event.number
-        id: fc
-        with:
-          issue-number: ${{ github.event.number }}
-          body-includes: "<!-- GH NBA -->"
+    # Looks for a comment with <!-- GH BOT --> somewhere in its body.
+    - name: Find Comment
+      uses: peter-evans/find-comment@v2
+      if: success() && github.event.number
+      id: fc
+      with:
+        issue-number: ${{ github.event.number }}
+        body-includes: "<!-- GH NBA -->"
 
-      # If no comment exists, make one with the previously saved Action variable!
-      - name: Create Comment
-        uses: peter-evans/create-or-update-comment@v3
-        if: success() && github.event.number && steps.fc.outputs.comment-id == 0
-        with:
-          token: ${{ secrets.CREATE_OR_UPDATE_COMMENT }}
-          issue-number: ${{ github.event.number }}
-          body: ${{ steps.get-comment-body.outputs.body }}
+    # If no comment exists, make one with the previously saved Action variable!
+    - name: Create Comment
+      uses: peter-evans/create-or-update-comment@v3
+      if: success() && github.event.number && steps.fc.outputs.comment-id == 0
+      with:
+        token: ${{ secrets.CREATE_OR_UPDATE_COMMENT }}
+        issue-number: ${{ github.event.number }}
+        body: ${{ steps.get-comment-body.outputs.body }}
 
-      # Otherwise, if a comment already exists, replace its body.
-      - name: Update Comment
-        uses: peter-evans/create-or-update-comment@v3
-        if: success() && github.event.number && steps.fc.outputs.comment-id != 0
-        with:
-          token: ${{ secrets.CREATE_OR_UPDATE_COMMENT }}
-          issue-number: ${{ github.event.number }}
-          body: ${{ steps.get-comment-body.outputs.body }}
-          comment-id: ${{ steps.fc.outputs.comment-id }}
-          edit-mode: replace
-
+    # Otherwise, if a comment already exists, replace its body.
+    - name: Update Comment
+      uses: peter-evans/create-or-update-comment@v3
+      if: success() && github.event.number && steps.fc.outputs.comment-id != 0
+      with:
+        token: ${{ secrets.CREATE_OR_UPDATE_COMMENT }}
+        issue-number: ${{ github.event.number }}
+        body: ${{ steps.get-comment-body.outputs.body }}
+        comment-id: ${{ steps.fc.outputs.comment-id }}
+        edit-mode: replace
