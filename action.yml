@@ -29,7 +29,7 @@ runs:
         path: .next/analyze/${{ inputs.default-branch }}
 
     - name: Generate analysis report
-      run: mkdir -p ${{ inputs.prefix }}/analyze/${{ inputs.default-branch }} && node ./dist/index.js
+      run: mkdir -p ${{ inputs.prefix }}/analyze/${{ inputs.default-branch }} && ${{ github.action_path }}/node dist/index.js
       shell: bash
 
     - name: Upload report
