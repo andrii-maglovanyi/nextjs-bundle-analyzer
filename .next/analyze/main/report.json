@@ -1,0 +1,12 @@
+{
+  "pages": { "/_found": 182, "/": 7166, "/about": 167 },
+  "chunks": {
+    "js": {
+      "static/chunks/webpack-985ed4bb0324d1cb.js": 100,
+      "static/chunks/webpack-985ed4bb0324d1ca.js": 1195,
+      "static/chunks/fd9d1056-39de21f001c52188.js": 53281,
+      "static/chunks/472-a7c17b00f8ce392b.js": 30006
+    },
+    "css": { "static/css/280574e43cee558f.css": 2233 }
+  }
+}

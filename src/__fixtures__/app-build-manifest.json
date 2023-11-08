@@ -1,0 +1,26 @@
+{
+  "pages": {
+    "/_not-found": [
+      "/static/chunks/js1.js",
+      "/static/chunks/js2.js",
+      "/static/chunks/app/_not-found1.js"
+    ],
+    "/layout": [
+      "/static/chunks/js1.js",
+      "/static/chunks/js2.js",
+      "/static/css/css1.css",
+      "/static/chunks/app/layout1.js"
+    ],
+    "/page": [
+      "/static/chunks/js1.js",
+      "/static/chunks/js2.js",
+      "/static/chunks/js3.js",
+      "/static/chunks/app/page1.js"
+    ],
+    "/about/page": [
+      "/static/chunks/js1.js",
+      "/static/chunks/js2.js",
+      "/static/chunks/app/about/page1.js"
+    ]
+  }
+}
