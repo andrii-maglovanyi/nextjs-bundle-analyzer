@@ -9,6 +9,10 @@ inputs:
     default: ".next"
   workflow-id:
     description: "Workflow ID containing this step"
+    required: true
+  github-token:
+    description: "Token for GitHub operations."
+    required: true
   budget:
     description: "Bundle size budget"
     default: 200
@@ -60,7 +64,7 @@ runs:
       uses: peter-evans/create-or-update-comment@v3
       if: success() && github.event.number && steps.fc.outputs.comment-id == 0
       with:
-        token: ${{ secrets.CREATE_OR_UPDATE_COMMENT }}
+        token: ${{ inputs.github-token }}
         issue-number: ${{ github.event.number }}
         body: ${{ steps.get-comment-body.outputs.body }}
 
@@ -69,7 +73,7 @@ runs:
       uses: peter-evans/create-or-update-comment@v3
       if: success() && github.event.number && steps.fc.outputs.comment-id != 0
       with:
-        token: ${{ secrets.CREATE_OR_UPDATE_COMMENT }}
+        token: ${{ inputs.github-token }}
         issue-number: ${{ github.event.number }}
         body: ${{ steps.get-comment-body.outputs.body }}
         comment-id: ${{ steps.fc.outputs.comment-id }}
