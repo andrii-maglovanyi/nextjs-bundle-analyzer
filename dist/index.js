@@ -25525,7 +25525,9 @@ catch (error) {
         },
     };
 }
+console.log("appBuildManifest", appBuildManifest);
 const currentReport = getAnalysis(appBuildManifest);
+console.log("CURRENT REPORT", currentReport);
 exportToFile("analyze", "report.json")(JSON.stringify(currentReport));
 const comparison = getComparison(baseReport, currentReport);
 const comparisonReport = renderReport(comparison);
