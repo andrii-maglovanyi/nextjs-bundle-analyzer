@@ -18,16 +18,18 @@ const budget = +core.getInput("budget") || 200;
 setPrefix(prefix);
 setBudget(budget);
 
-const reportPath = `${prefix}/analyze/${defaultBranch}/report.json`;
+const importBaseReportPath = `${prefix}/analyze/${defaultBranch}/report.json`;
 const appBuildManifestPath = `${prefix}/app-build-manifest.json`;
+
+const exportPath = `${prefix}/analyze`;
 
 console.log("");
 
-console.log("reportPath", reportPath);
+console.log("reportPath", importBaseReportPath);
 console.log("appBuildManifestPath", appBuildManifestPath);
 
 try {
-  baseReport = loadJSON(reportPath);
+  baseReport = loadJSON(importBaseReportPath);
 } catch (error) {
   console.log("ERROR baseReport", error);
   baseReport = {
@@ -52,7 +54,7 @@ console.log("appBuildManifest", appBuildManifest);
 const currentReport = getAnalysis(appBuildManifest);
 console.log("CURRENT REPORT", currentReport);
 
-exportToFile("analyze", "report.json")(JSON.stringify(currentReport));
+exportToFile(exportPath, "report.json")(JSON.stringify(currentReport));
 
 const comparison = getComparison(baseReport, currentReport);
 
@@ -60,4 +62,4 @@ const comparisonReport = renderReport(comparison);
 
 console.log(comparisonReport);
 
-exportToFile("analyze", "report.txt")(comparisonReport);
+exportToFile(exportPath, "report.txt")(comparisonReport);

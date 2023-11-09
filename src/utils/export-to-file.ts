@@ -1,16 +1,12 @@
 import fs from "fs";
 import path from "path";
-import { getPrefix } from "../config.js";
 
 export const exportToFile =
-  (dirname: string, filename: string) => (data: string) => {
-    // const outDir = path.join(process.cwd(), getPrefix(), dirname);
-    const outDir = path.join(
-      process.env.GITHUB_WORKSPACE!,
-      getPrefix(),
-      dirname
-    );
-    const outFile = path.join(outDir, filename);
+  (dirPath: string, fileName: string) => (data: string) => {
+    const root = process.env.GITHUB_WORKSPACE || process.cwd();
+
+    const outDir = path.join(root, dirPath);
+    const outFile = path.join(outDir, fileName);
 
     try {
       fs.mkdirSync(outDir);

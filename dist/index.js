@@ -147,10 +147,10 @@ const getComparison = (baseReport, currentReport) => ({
     },
 });
 
-const exportToFile = (dirname, filename) => (data) => {
-    // const outDir = path.join(process.cwd(), getPrefix(), dirname);
-    const outDir = path.join(process.env.GITHUB_WORKSPACE, getPrefix(), dirname);
-    const outFile = path.join(outDir, filename);
+const exportToFile = (dirPath, fileName) => (data) => {
+    const root = process.env.GITHUB_WORKSPACE || process.cwd();
+    const outDir = path.join(root, dirPath);
+    const outFile = path.join(outDir, fileName);
     try {
         fs$1.mkdirSync(outDir);
     }
@@ -161,7 +161,8 @@ const exportToFile = (dirname, filename) => (data) => {
 };
 
 const loadJSON = (filePath) => {
-    const data = fs$1.readFileSync(new URL(path.join(process.env.GITHUB_WORKSPACE, filePath), import.meta.url), "utf-8");
+    const root = process.env.GITHUB_WORKSPACE || process.cwd();
+    const data = fs$1.readFileSync(new URL(path.join(root, filePath), import.meta.url), "utf-8");
     return JSON.parse(data);
 };
 
@@ -25523,13 +25524,14 @@ const prefix = coreExports.getInput("prefix") || ".next";
 const budget = +coreExports.getInput("budget") || 200;
 setPrefix(prefix);
 setBudget(budget);
-const reportPath = `${prefix}/analyze/${defaultBranch}/report.json`;
+const importBaseReportPath = `${prefix}/analyze/${defaultBranch}/report.json`;
 const appBuildManifestPath = `${prefix}/app-build-manifest.json`;
+const exportPath = `${prefix}/analyze`;
 console.log("");
-console.log("reportPath", reportPath);
+console.log("reportPath", importBaseReportPath);
 console.log("appBuildManifestPath", appBuildManifestPath);
 try {
-    baseReport = loadJSON(reportPath);
+    baseReport = loadJSON(importBaseReportPath);
 }
 catch (error) {
     console.log("ERROR baseReport", error);
@@ -25552,9 +25554,9 @@ catch (error) {
 console.log("appBuildManifest", appBuildManifest);
 const currentReport = getAnalysis(appBuildManifest);
 console.log("CURRENT REPORT", currentReport);
-exportToFile("analyze", "report.json")(JSON.stringify(currentReport));
+exportToFile(exportPath, "report.json")(JSON.stringify(currentReport));
 const comparison = getComparison(baseReport, currentReport);
 const comparisonReport = renderReport(comparison);
 console.log(comparisonReport);
-exportToFile("analyze", "report.txt")(comparisonReport);
+exportToFile(exportPath, "report.txt")(comparisonReport);
 //# sourceMappingURL=index.js.map
