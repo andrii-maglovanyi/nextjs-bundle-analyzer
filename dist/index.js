@@ -157,6 +157,7 @@ const exportToFile = (dirPath, fileName) => (data) => {
     catch (e) {
         // Ignore (dir exists)
     }
+    console.log(`Writing to ${outFile}`);
     fs$1.writeFileSync(outFile, data);
 };
 

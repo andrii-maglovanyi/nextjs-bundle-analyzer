@@ -14,5 +14,6 @@ export const exportToFile =
       // Ignore (dir exists)
     }
 
+    console.log(`Writing to ${outFile}`);
     fs.writeFileSync(outFile, data);
   };
