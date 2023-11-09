@@ -25531,6 +25531,7 @@ try {
     baseReport = loadJSON(reportPath);
 }
 catch (error) {
+    console.log("ERROR baseReport", error);
     baseReport = {
         pages: {},
         chunks: { js: {}, css: {} },
@@ -25540,6 +25541,7 @@ try {
     appBuildManifest = loadJSON(appBuildManifestPath);
 }
 catch (error) {
+    console.log("ERROR appBuildManifest", error);
     appBuildManifest = {
         pages: {
             ["/layout"]: [],
