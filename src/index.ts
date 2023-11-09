@@ -38,6 +38,8 @@ try {
   };
 }
 
+console.log("appBuildManifest", appBuildManifest);
+
 const currentReport = getAnalysis(appBuildManifest);
 console.log("CURRENT REPORT", currentReport);
 
