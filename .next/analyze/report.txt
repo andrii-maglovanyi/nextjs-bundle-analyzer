@@ -1,31 +1,38 @@
 # Bundle Size Report
 
-🤔 Total bundle size unchanged\
-📦 `0` new, `0` changed, `0` deleted files
+💥 Total bundle size increased `+1.27kB (+1.38%)`\
+📦 `1` new, `1` changed, `1` deleted files
 
 || Route | Size | Total size | % of Budget (`200kB`) |
 | :---: | :--- | :--- | ---: | :--- |
-
+| + | /_not-found | 882B | 84.08kB | 42.47%  |
+| ± | /about | 137B (-30B) | 83.35kB | 41.74%  (-0.01%) |
+|  | / | 7kB | 90.21kB | 48.61%  |
+| − | /_found | 182B |
 
 <details>
-<summary>JS shared by all pages <code>0B</code></summary>
+<summary>JS shared by all pages <code>83.22kB</code></summary>
 
 
-📦 `0` new, `0` changed, `0` deleted files
+📦 `1` new, `1` changed, `1` deleted files
 || Chunk file name | Size |
 | :---: | :--- | :--- |
-
+| + | static/chunks/main-app-22654affa029870a.js | 232B |  |  |
+| ± | static/chunks/webpack-985ed4bb0324d1ca.js | 1.66kB (+500B) |  |  |
+|  | static/chunks/472-a7c17b00f8ce392b.js | 29.3kB |  |  |
+|  | static/chunks/fd9d1056-39de21f001c52188.js | 52.03kB |  |  |
+| − | static/chunks/webpack-985ed4bb0324d1cb.js | 100B |
 
 </details>
 
 <details>
-<summary>CSS shared by all pages <code>0B</code></summary>
+<summary>CSS shared by all pages <code>2.18kB</code></summary>
 
 
 📦 `0` new, `0` changed, `0` deleted files
 || Chunk file name | Size |
 | :---: | :--- | :--- |
-
+|  | static/css/280574e43cee558f.css | 2.18kB |  |  |
 
 </details>
 

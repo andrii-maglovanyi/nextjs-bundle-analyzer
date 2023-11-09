@@ -16,8 +16,8 @@ const budget = +core.getInput("budget") || 200;
 setPrefix(prefix);
 setBudget(budget);
 
-const reportPath = `../../${prefix}/analyze/${defaultBranch}/report.json`;
-const appBuildManifestPath = `../../${prefix}/app-build-manifest.json`;
+const reportPath = `${prefix}/analyze/${defaultBranch}/report.json`;
+const appBuildManifestPath = `${prefix}/app-build-manifest.json`;
 
 try {
   baseReport = loadJSON(reportPath);
