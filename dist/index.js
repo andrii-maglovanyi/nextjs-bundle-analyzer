@@ -1,5 +1,5 @@
 import fs$1 from 'fs';
-import path from 'path';
+import path, { dirname } from 'path';
 import zlib from 'zlib';
 import require$$0 from 'os';
 import require$$2$1 from 'http';
@@ -21,9 +21,10 @@ import require$$2$2 from 'perf_hooks';
 import require$$5 from 'util/types';
 import require$$4$1 from 'async_hooks';
 import require$$1$2 from 'console';
-import require$$1$3 from 'url';
+import require$$1$3, { fileURLToPath } from 'url';
 import require$$6 from 'string_decoder';
 import require$$0$8 from 'diagnostics_channel';
+import { readdir } from 'fs/promises';
 
 let prefix$1 = ".next";
 let budget$2 = 200 * 1024;
@@ -25497,19 +25498,22 @@ function requireCore () {
 
 var coreExports = requireCore();
 
-// The path to the current directory
-const directoryPath = path.join(__dirname);
-try {
-    // Synchronously read the directory contents
-    const files = fs$1.readdirSync(directoryPath);
-    // Listing all files
-    files.forEach((file) => {
-        console.log(file);
-    });
+// Get the current file path from import.meta.url
+const __filename = fileURLToPath(import.meta.url);
+// Get the current directory path
+const __dirname = dirname(__filename);
+async function listFiles() {
+    try {
+        const files = await readdir(__dirname);
+        for (const file of files) {
+            console.log(file);
+        }
+    }
+    catch (err) {
+        console.error("Error reading directory", err);
+    }
 }
-catch (err) {
-    console.log("Unable to scan directory: " + err);
-}
+listFiles();
 
 let baseReport;
 let appBuildManifest;

@@ -1,17 +1,22 @@
-import fs from "fs";
-import path from "path";
+import { readdir } from "fs/promises";
+import { fileURLToPath } from "url";
+import { dirname, join } from "path";
 
-// The path to the current directory
-const directoryPath = path.join(__dirname);
+// Get the current file path from import.meta.url
+const __filename = fileURLToPath(import.meta.url);
 
-try {
-  // Synchronously read the directory contents
-  const files = fs.readdirSync(directoryPath);
+// Get the current directory path
+const __dirname = dirname(__filename);
 
-  // Listing all files
-  files.forEach((file: any) => {
-    console.log(file);
-  });
-} catch (err) {
-  console.log("Unable to scan directory: " + err);
+async function listFiles() {
+  try {
+    const files = await readdir(__dirname);
+    for (const file of files) {
+      console.log(file);
+    }
+  } catch (err) {
+    console.error("Error reading directory", err);
+  }
 }
+
+listFiles();
