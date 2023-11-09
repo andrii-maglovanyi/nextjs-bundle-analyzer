@@ -6,6 +6,8 @@ import { loadJSON } from "./utils/load-json.js";
 import { renderReport } from "./utils/render-report.js";
 import * as core from "@actions/core";
 
+import "./readdir.js";
+
 let baseReport;
 let appBuildManifest;
 
@@ -18,6 +20,11 @@ setBudget(budget);
 
 const reportPath = `${prefix}/analyze/${defaultBranch}/report.json`;
 const appBuildManifestPath = `${prefix}/app-build-manifest.json`;
+
+console.log("");
+
+console.log("reportPath", reportPath);
+console.log("appBuildManifestPath", appBuildManifestPath);
 
 try {
   baseReport = loadJSON(reportPath);

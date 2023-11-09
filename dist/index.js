@@ -1,5 +1,5 @@
-import fs$1 from 'fs';
-import path from 'path';
+import fs$2 from 'fs';
+import path$1 from 'path';
 import zlib from 'zlib';
 import require$$0 from 'os';
 import require$$2$1 from 'http';
@@ -36,8 +36,8 @@ const getFileSizes = (pathToFile) => {
     console.log("CWD", process.cwd());
     console.log("PREFIX", getPrefix());
     console.log("PATH", pathToFile);
-    const fullPath = path.join(process.cwd(), getPrefix(), pathToFile);
-    const bytes = fs$1.readFileSync(fullPath);
+    const fullPath = path$1.join(process.cwd(), getPrefix(), pathToFile);
+    const bytes = fs$2.readFileSync(fullPath);
     const zippedBytes = zlib.gzipSync(bytes);
     return { [pathToFile]: zippedBytes.byteLength };
 };
@@ -147,19 +147,19 @@ const getComparison = (baseReport, currentReport) => ({
 });
 
 const exportToFile = (dirname, filename) => (data) => {
-    const outDir = path.join(process.cwd(), getPrefix(), dirname);
-    const outFile = path.join(outDir, filename);
+    const outDir = path$1.join(process.cwd(), getPrefix(), dirname);
+    const outFile = path$1.join(outDir, filename);
     try {
-        fs$1.mkdirSync(outDir);
+        fs$2.mkdirSync(outDir);
     }
     catch (e) {
         // Ignore (dir exists)
     }
-    fs$1.writeFileSync(outFile, data);
+    fs$2.writeFileSync(outFile, data);
 };
 
 const loadJSON = (path) => {
-    const data = fs$1.readFileSync(new URL(path, import.meta.url), "utf-8");
+    const data = fs$2.readFileSync(new URL(path, import.meta.url), "utf-8");
     return JSON.parse(data);
 };
 
@@ -1121,7 +1121,7 @@ Object.defineProperty(fileCommand, "__esModule", { value: true });
 fileCommand.prepareKeyValueMessage = fileCommand.issueFileCommand = void 0;
 // We use any as a valid input type
 /* eslint-disable @typescript-eslint/no-explicit-any */
-const fs = __importStar$1(fs$1);
+const fs$1 = __importStar$1(fs$2);
 const os = __importStar$1(require$$0);
 const uuid_1 = require$$2;
 const utils_1 = utils$1;
@@ -1130,10 +1130,10 @@ function issueFileCommand(command, message) {
     if (!filePath) {
         throw new Error(`Unable to find environment variable for file command ${command}`);
     }
-    if (!fs.existsSync(filePath)) {
+    if (!fs$1.existsSync(filePath)) {
         throw new Error(`Missing file at path: ${filePath}`);
     }
-    fs.appendFileSync(filePath, `${utils_1.toCommandValue(message)}${os.EOL}`, {
+    fs$1.appendFileSync(filePath, `${utils_1.toCommandValue(message)}${os.EOL}`, {
         encoding: 'utf8'
     });
 }
@@ -24809,7 +24809,7 @@ function requireSummary () {
 		Object.defineProperty(exports, "__esModule", { value: true });
 		exports.summary = exports.markdownSummary = exports.SUMMARY_DOCS_URL = exports.SUMMARY_ENV_VAR = void 0;
 		const os_1 = require$$0;
-		const fs_1 = fs$1;
+		const fs_1 = fs$2;
 		const { access, appendFile, writeFile } = fs_1.promises;
 		exports.SUMMARY_ENV_VAR = 'GITHUB_STEP_SUMMARY';
 		exports.SUMMARY_DOCS_URL = 'https://docs.github.com/actions/using-workflows/workflow-commands-for-github-actions#adding-a-job-summary';
@@ -25111,7 +25111,7 @@ function requirePathUtils () {
 	};
 	Object.defineProperty(pathUtils, "__esModule", { value: true });
 	pathUtils.toPlatformPath = pathUtils.toWin32Path = pathUtils.toPosixPath = void 0;
-	const path$1 = __importStar(path);
+	const path = __importStar(path$1);
 	/**
 	 * toPosixPath converts the given path to the posix form. On Windows, \\ will be
 	 * replaced with /.
@@ -25143,7 +25143,7 @@ function requirePathUtils () {
 	 * @return string The platform-specific path.
 	 */
 	function toPlatformPath(pth) {
-	    return pth.replace(/[/\\]/g, path$1.sep);
+	    return pth.replace(/[/\\]/g, path.sep);
 	}
 	pathUtils.toPlatformPath = toPlatformPath;
 	
@@ -25190,7 +25190,7 @@ function requireCore () {
 		const file_command_1 = fileCommand;
 		const utils_1 = utils$1;
 		const os = __importStar(require$$0);
-		const path$1 = __importStar(path);
+		const path = __importStar(path$1);
 		const oidc_utils_1 = requireOidcUtils();
 		/**
 		 * The code to exit an action
@@ -25245,7 +25245,7 @@ function requireCore () {
 		    else {
 		        command_1.issueCommand('add-path', {}, inputPath);
 		    }
-		    process.env['PATH'] = `${inputPath}${path$1.delimiter}${process.env['PATH']}`;
+		    process.env['PATH'] = `${inputPath}${path.delimiter}${process.env['PATH']}`;
 		}
 		exports.addPath = addPath;
 		/**
@@ -25497,6 +25497,22 @@ function requireCore () {
 
 var coreExports = requireCore();
 
+const fs = require("fs");
+const path = require("path");
+// The path to the current directory
+const directoryPath = path.join(__dirname);
+try {
+    // Synchronously read the directory contents
+    const files = fs.readdirSync(directoryPath);
+    // Listing all files
+    files.forEach((file) => {
+        console.log(file);
+    });
+}
+catch (err) {
+    console.log("Unable to scan directory: " + err);
+}
+
 let baseReport;
 let appBuildManifest;
 const defaultBranch = coreExports.getInput("default-branch") || "main";
@@ -25506,6 +25522,9 @@ setPrefix(prefix);
 setBudget(budget);
 const reportPath = `${prefix}/analyze/${defaultBranch}/report.json`;
 const appBuildManifestPath = `${prefix}/app-build-manifest.json`;
+console.log("");
+console.log("reportPath", reportPath);
+console.log("appBuildManifestPath", appBuildManifestPath);
 try {
     baseReport = loadJSON(reportPath);
 }
