@@ -148,7 +148,8 @@ const getComparison = (baseReport, currentReport) => ({
 });
 
 const exportToFile = (dirname, filename) => (data) => {
-    const outDir = path.join(process.cwd(), getPrefix(), dirname);
+    // const outDir = path.join(process.cwd(), getPrefix(), dirname);
+    const outDir = path.join(process.env.GITHUB_WORKSPACE, getPrefix(), dirname);
     const outFile = path.join(outDir, filename);
     try {
         fs$1.mkdirSync(outDir);
@@ -159,8 +160,8 @@ const exportToFile = (dirname, filename) => (data) => {
     fs$1.writeFileSync(outFile, data);
 };
 
-const loadJSON = (path) => {
-    const data = fs$1.readFileSync(new URL(path, import.meta.url), "utf-8");
+const loadJSON = (filePath) => {
+    const data = fs$1.readFileSync(new URL(path.join(process.env.GITHUB_WORKSPACE, filePath), import.meta.url), "utf-8");
     return JSON.parse(data);
 };
 

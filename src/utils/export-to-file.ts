@@ -4,7 +4,12 @@ import { getPrefix } from "../config.js";
 
 export const exportToFile =
   (dirname: string, filename: string) => (data: string) => {
-    const outDir = path.join(process.cwd(), getPrefix(), dirname);
+    // const outDir = path.join(process.cwd(), getPrefix(), dirname);
+    const outDir = path.join(
+      process.env.GITHUB_WORKSPACE!,
+      getPrefix(),
+      dirname
+    );
     const outFile = path.join(outDir, filename);
 
     try {
