@@ -25555,7 +25555,7 @@ catch (error) {
 console.log("appBuildManifest", appBuildManifest);
 const currentReport = getAnalysis(appBuildManifest);
 console.log("CURRENT REPORT", currentReport);
-exportToFile(exportPath, "report.json")(JSON.stringify(currentReport));
+exportToFile(exportPath, `${defaultBranch}/report.json`)(JSON.stringify(currentReport));
 const comparison = getComparison(baseReport, currentReport);
 const comparisonReport = renderReport(comparison);
 console.log(comparisonReport);
