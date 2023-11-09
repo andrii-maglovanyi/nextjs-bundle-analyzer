@@ -39,6 +39,7 @@ try {
 }
 
 const currentReport = getAnalysis(appBuildManifest);
+console.log("CURRENT REPORT", currentReport);
 
 exportToFile("analyze", "report.json")(JSON.stringify(currentReport));
 
