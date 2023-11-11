@@ -25506,6 +25506,7 @@ let appBuildManifest;
 const defaultBranch = coreExports.getInput("default-branch") || "main";
 const prefix = coreExports.getInput("prefix") || ".next";
 const budget = +coreExports.getInput("budget") || 200;
+console.log("SET BUDEGT", budget);
 setPrefix(prefix);
 setBudget(budget);
 const importBaseReportPath = `${prefix}/analyze/${defaultBranch}/report.json`;

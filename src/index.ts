@@ -13,6 +13,8 @@ const defaultBranch = core.getInput("default-branch") || "main";
 const prefix = core.getInput("prefix") || ".next";
 const budget = +core.getInput("budget") || 200;
 
+console.log("SET BUDEGT", budget);
+
 setPrefix(prefix);
 setBudget(budget);
 
