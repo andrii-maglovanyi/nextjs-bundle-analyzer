@@ -30,6 +30,7 @@ runs:
 
     - name: Generate analysis report
       run: node ${{ github.action_path }}/dist/index.js
+      shell: bash
 
     - name: Upload report
       uses: actions/upload-artifact@v3
