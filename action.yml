@@ -29,12 +29,7 @@ runs:
         path: ${{ inputs.prefix }}/analyze
 
     - name: Generate analysis report
-      run: mkdir -p ${{ inputs.prefix }}/analyze/${{ inputs.default-branch }} && node ${{ github.action_path }}/dist/index.js
-      with:
-        budget: ${{ inputs.budget }}
-        default-branch: ${{ inputs.default-branch }}
-        prefix: ${{ inputs.prefix }}
-      shell: bash
+      run: node ${{ github.action_path }}/dist/index.js
 
     - name: Upload report
       uses: actions/upload-artifact@v3
