@@ -30,6 +30,10 @@ runs:
 
     - name: Generate analysis report
       run: mkdir -p ${{ inputs.prefix }}/analyze/${{ inputs.default-branch }} && node ${{ github.action_path }}/dist/index.js
+      with:
+        budget: ${{ inputs.budget }}
+        default-branch: ${{ inputs.default-branch }}
+        prefix: ${{ inputs.prefix }}
       shell: bash
 
     - name: Upload report
