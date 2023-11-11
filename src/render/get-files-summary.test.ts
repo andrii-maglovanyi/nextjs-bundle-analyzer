@@ -11,7 +11,7 @@ describe("get-files-summary", () => {
 
     const result = getFilesSummary(comparison);
 
-    expect(result).toEqual("📦 `1` new, `1` changed, `1` deleted files");
+    expect(result).toEqual("📦 `1` new, `1` changed and `1` deleted files");
   });
 
   test("should return zero added, changed and removed files", () => {
@@ -24,7 +24,7 @@ describe("get-files-summary", () => {
 
     const result = getFilesSummary(comparison);
 
-    expect(result).toEqual("📦 `0` new, `0` changed, `0` deleted files");
+    expect(result).toEqual("📦 `0` new, `0` changed and `0` deleted files");
   });
 
   test("should return one added, zero changed and zeo removed files", () => {
@@ -37,7 +37,7 @@ describe("get-files-summary", () => {
 
     const result = getFilesSummary(comparison);
 
-    expect(result).toEqual("📦 `1` new, `0` changed, `0` deleted files");
+    expect(result).toEqual("📦 `1` new, `0` changed and `0` deleted files");
   });
 
   test("should return zero added, one changed and zero removed files", () => {
@@ -50,6 +50,6 @@ describe("get-files-summary", () => {
 
     const result = getFilesSummary(comparison, "pages");
 
-    expect(result).toEqual("📄 `0` new, `1` changed, `0` deleted pages");
+    expect(result).toEqual("📄 `0` new, `1` changed and `0` deleted pages");
   });
 });
