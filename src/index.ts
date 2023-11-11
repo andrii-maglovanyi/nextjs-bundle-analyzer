@@ -5,7 +5,6 @@ import { exportToFile } from "./utils/export-to-file.js";
 import { loadJSON } from "./utils/load-json.js";
 import { renderReport } from "./utils/render-report.js";
 import * as core from "@actions/core";
-import * as github from "@actions/github";
 
 let baseReport;
 let appBuildManifest;
@@ -15,8 +14,7 @@ const prefix = core.getInput("prefix");
 const budget = +core.getInput("budget");
 
 console.log("SET BUDEGT", budget);
-const payload = JSON.stringify(github.context.payload, undefined, 2);
-console.log(`The event payload: ${payload}`);
+console.log(`The event payload: ${core.summary}`);
 
 setPrefix(prefix);
 setBudget(budget);
