@@ -9,9 +9,9 @@ import * as core from "@actions/core";
 let baseReport;
 let appBuildManifest;
 
-const defaultBranch = core.getInput("default-branch");
-const prefix = core.getInput("prefix");
-const budget = +core.getInput("budget");
+const defaultBranch = core.getInput("default-branch") || "main";
+const prefix = core.getInput("prefix") || ".next";
+const budget = +core.getInput("budget") || 200;
 
 console.log("SET BUDEGT", budget);
 console.log(`The event payload: ${core.summary}`);
@@ -53,5 +53,7 @@ exportToFile(
 const comparison = getComparison(baseReport, currentReport);
 
 const comparisonReport = renderReport(comparison);
+
+console.log(comparisonReport);
 
 exportToFile(exportPath, "report.txt")(comparisonReport);

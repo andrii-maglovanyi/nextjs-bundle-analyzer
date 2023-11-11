@@ -25503,9 +25503,9 @@ var coreExports = requireCore();
 
 let baseReport;
 let appBuildManifest;
-const defaultBranch = coreExports.getInput("default-branch");
-const prefix = coreExports.getInput("prefix");
-const budget = +coreExports.getInput("budget");
+const defaultBranch = coreExports.getInput("default-branch") || "main";
+const prefix = coreExports.getInput("prefix") || ".next";
+const budget = +coreExports.getInput("budget") || 200;
 console.log("SET BUDEGT", budget);
 console.log(`The event payload: ${coreExports.summary}`);
 setPrefix(prefix);
@@ -25536,5 +25536,6 @@ const currentReport = getAnalysis(appBuildManifest);
 exportToFile(exportPath, `${defaultBranch}/report.json`)(JSON.stringify(currentReport));
 const comparison = getComparison(baseReport, currentReport);
 const comparisonReport = renderReport(comparison);
+console.log(comparisonReport);
 exportToFile(exportPath, "report.txt")(comparisonReport);
 //# sourceMappingURL=index.js.map
