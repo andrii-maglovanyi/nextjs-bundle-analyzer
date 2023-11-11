@@ -1,21 +1,21 @@
 name: "Next.js bundle analyzer"
 description: "Evaluate the size of the code bundle and assess the changes in its size."
 inputs:
-  default-branch:
-    description: "Default branch of the repo (main or master)"
-    default: main
-  prefix:
-    description: "Next.js dist directory"
-    default: ".next"
   workflow-id:
     description: "Workflow ID containing this step"
     required: true
   github-token:
     description: "Token for GitHub operations."
     required: true
+  default-branch:
+    description: "Default branch of the repo (main or master)"
+    default: main
+  prefix:
+    description: "Next.js dist directory"
+    default: ".next"
   budget:
     description: "Bundle size budget"
-    default: 200
+    default: 210
 runs:
   using: "composite"
   steps:

@@ -235,7 +235,7 @@ const getDetails = (size, delta, totalChunksSize) => {
     if (!totalChunksSize)
         return ["", ""];
     const totalSize = size + totalChunksSize;
-    const sign = delta > 0 ? "+" : "-";
+    const sign = delta > 0 ? "+" : "";
     const percentageChange = delta ? ` (${sign}${getPercentage(delta)}%)` : "";
     return [
         formatBytes(totalSize),
@@ -25503,9 +25503,9 @@ var coreExports = requireCore();
 
 let baseReport;
 let appBuildManifest;
-const defaultBranch = coreExports.getInput("default-branch") || "main";
-const prefix = coreExports.getInput("prefix") || ".next";
-const budget = +coreExports.getInput("budget") || 200;
+const defaultBranch = coreExports.getInput("default-branch");
+const prefix = coreExports.getInput("prefix");
+const budget = +coreExports.getInput("budget");
 console.log("SET BUDEGT", budget);
 setPrefix(prefix);
 setBudget(budget);

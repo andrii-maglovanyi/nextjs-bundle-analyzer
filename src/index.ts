@@ -9,9 +9,9 @@ import * as core from "@actions/core";
 let baseReport;
 let appBuildManifest;
 
-const defaultBranch = core.getInput("default-branch") || "main";
-const prefix = core.getInput("prefix") || ".next";
-const budget = +core.getInput("budget") || 200;
+const defaultBranch = core.getInput("default-branch");
+const prefix = core.getInput("prefix");
+const budget = +core.getInput("budget");
 
 console.log("SET BUDEGT", budget);
 

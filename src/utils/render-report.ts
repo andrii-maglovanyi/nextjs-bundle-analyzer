@@ -17,7 +17,7 @@ const getDetails = (size: number, delta: number, totalChunksSize?: number) => {
   if (!totalChunksSize) return ["", ""];
 
   const totalSize = size + totalChunksSize;
-  const sign = delta > 0 ? "+" : "-";
+  const sign = delta > 0 ? "+" : "";
   const percentageChange = delta ? ` (${sign}${getPercentage(delta)}%)` : "";
 
   return [
