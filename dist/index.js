@@ -245,7 +245,7 @@ const getDetails = (size, delta, totalChunksSize) => {
 const addedEntries = (entries, totalChunksSize) => getTableRows(entries, (title, size) => [
     "+",
     title,
-    `${formatBytes(size, true)}`,
+    `+${formatBytes(size)}`,
     ...getDetails(size, 0, totalChunksSize),
 ]);
 const changedEntries = (entries, totalChunksSize) => getTableRows(entries, (title, size, delta) => [
@@ -263,7 +263,7 @@ const unchangedEntries = (entries, totalChunksSize) => getTableRows(entries, (ti
 const removedEntries = (entries) => getTableRows(entries, (title, size) => [
     "−",
     title,
-    `${formatBytes(size, true)}`,
+    `-${formatBytes(size)}`,
 ]);
 const renderReport = (comparison) => {
     const { pages, chunks } = comparison;
@@ -280,7 +280,7 @@ const renderReport = (comparison) => {
     }, "size");
     return `# Bundle Size Report
 
-${[getDeltaSummary(comparison), getFilesSummary(pages, "files")].join("\\\n")}
+${[getDeltaSummary(comparison), getFilesSummary(pages, "pages")].join("\\\n")}
 
 || Route | Size | Total size | % of \`${formatBytes(budget$1)}\` budget |
 | :---: | :--- | :--- | ---: | :--- |
