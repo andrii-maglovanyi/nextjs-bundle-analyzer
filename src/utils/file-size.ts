@@ -8,9 +8,6 @@ export interface FileSizes {
 }
 
 export const getFileSizes = (pathToFile: string): FileSizes => {
-  console.log("CWD", process.cwd());
-  console.log("PREFIX", getPrefix());
-  console.log("PATH", pathToFile);
   const fullPath = path.join(process.cwd(), getPrefix(), pathToFile);
   const bytes = fs.readFileSync(fullPath);
   const zippedBytes = zlib.gzipSync(bytes);

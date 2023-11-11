@@ -1,5 +1,5 @@
 import fs$1 from 'fs';
-import path, { dirname } from 'path';
+import path from 'path';
 import zlib from 'zlib';
 import require$$0 from 'os';
 import require$$2$1 from 'http';
@@ -21,10 +21,9 @@ import require$$2$2 from 'perf_hooks';
 import require$$5 from 'util/types';
 import require$$4$1 from 'async_hooks';
 import require$$1$2 from 'console';
-import require$$1$3, { fileURLToPath } from 'url';
+import require$$1$3 from 'url';
 import require$$6 from 'string_decoder';
 import require$$0$8 from 'diagnostics_channel';
-import { readdir } from 'fs/promises';
 
 let prefix$1 = ".next";
 let budget$2 = 200 * 1024;
@@ -34,9 +33,6 @@ const setBudget = (newBudget) => (budget$2 = newBudget * 1024);
 const getBudget = () => budget$2;
 
 const getFileSizes = (pathToFile) => {
-    console.log("CWD", process.cwd());
-    console.log("PREFIX", getPrefix());
-    console.log("PATH", pathToFile);
     const fullPath = path.join(process.cwd(), getPrefix(), pathToFile);
     const bytes = fs$1.readFileSync(fullPath);
     const zippedBytes = zlib.gzipSync(bytes);
@@ -157,7 +153,6 @@ const exportToFile = (dirPath, fileName) => (data) => {
     catch (e) {
         // Ignore (dir exists)
     }
-    console.log(`Writing to ${outFile}`);
     fs$1.writeFileSync(outFile, data);
 };
 
@@ -214,7 +209,7 @@ const getDeltaSummary = (comparison) => {
         return "🤔 Total bundle size unchanged";
     return totalDelta < 0
         ? `🎉 Total bundle size decreased \`${sizeStats}\``
-        : `💥 Total bundle size increased \`${sizeStats}\``;
+        : `🏋️ Total bundle size increased \`${sizeStats}\``;
 };
 
 const getFilesSummary = (changes, type = "files") => {
@@ -300,7 +295,7 @@ ${[
 <details>
 <summary>JS shared by all pages <code>${formatBytes(totalJSChunksSize)}</code></summary>
 
-
+\
 ${getFilesSummary(js)}
 || Chunk file name | Size |
 | :---: | :--- | :--- |
@@ -318,7 +313,7 @@ ${[
 <details>
 <summary>CSS shared by all pages <code>${formatBytes(totalCSSChunksSize)}</code></summary>
 
-
+\
 ${getFilesSummary(css)}
 || Chunk file name | Size |
 | :---: | :--- | :--- |
@@ -25501,23 +25496,6 @@ function requireCore () {
 
 var coreExports = requireCore();
 
-// Get the current file path from import.meta.url
-const __filename = fileURLToPath(import.meta.url);
-// Get the current directory path
-const __dirname = dirname(__filename);
-async function listFiles() {
-    try {
-        const files = await readdir(__dirname);
-        for (const file of files) {
-            console.log(file);
-        }
-    }
-    catch (err) {
-        console.error("Error reading directory", err);
-    }
-}
-listFiles();
-
 let baseReport;
 let appBuildManifest;
 const defaultBranch = coreExports.getInput("default-branch") || "main";
@@ -25528,14 +25506,10 @@ setBudget(budget);
 const importBaseReportPath = `${prefix}/analyze/${defaultBranch}/report.json`;
 const appBuildManifestPath = `${prefix}/app-build-manifest.json`;
 const exportPath = `${prefix}/analyze`;
-console.log("");
-console.log("reportPath", importBaseReportPath);
-console.log("appBuildManifestPath", appBuildManifestPath);
 try {
     baseReport = loadJSON(importBaseReportPath);
 }
 catch (error) {
-    console.log("ERROR baseReport", error);
     baseReport = {
         pages: {},
         chunks: { js: {}, css: {} },
@@ -25545,19 +25519,15 @@ try {
     appBuildManifest = loadJSON(appBuildManifestPath);
 }
 catch (error) {
-    console.log("ERROR appBuildManifest", error);
     appBuildManifest = {
         pages: {
             ["/layout"]: [],
         },
     };
 }
-console.log("appBuildManifest", appBuildManifest);
 const currentReport = getAnalysis(appBuildManifest);
-console.log("CURRENT REPORT", currentReport);
 exportToFile(exportPath, `${defaultBranch}/report.json`)(JSON.stringify(currentReport));
 const comparison = getComparison(baseReport, currentReport);
 const comparisonReport = renderReport(comparison);
-console.log(comparisonReport);
 exportToFile(exportPath, "report.txt")(comparisonReport);
 //# sourceMappingURL=index.js.map

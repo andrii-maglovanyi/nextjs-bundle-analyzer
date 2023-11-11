@@ -35,7 +35,7 @@ runs:
     - name: Upload report
       uses: actions/upload-artifact@v3
       with:
-        name: report
+        name: ${{ inputs.default-branch }}
         path: ${{ inputs.prefix }}/analyze/${{ inputs.default-branch }}/report.json
 
     # A bit of find & replace on our output text for displaying properly. Save this to an Action variable.
@@ -44,10 +44,6 @@ runs:
       if: success() && github.event.number
       run: |
         body=$(cat ${{ inputs.prefix }}/analyze/report.txt)
-        # body="${body//'%'/'%25'}"
-        # body="${body//$'\n'/'%0A'}"
-        # body="${body//$'\r'/'%0D'}"
-        # Use GITHUB_OUTPUT to set the output parameter
         echo "body<<EOF" >> $GITHUB_OUTPUT
         echo "$body" >> $GITHUB_OUTPUT
         echo "EOF" >> $GITHUB_OUTPUT

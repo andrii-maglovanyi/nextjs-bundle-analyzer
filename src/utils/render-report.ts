@@ -107,7 +107,7 @@ ${[
     totalJSChunksSize
   )}</code></summary>
 
-
+\
 ${getFilesSummary(js)}
 || Chunk file name | Size |
 | :---: | :--- | :--- |
@@ -127,7 +127,7 @@ ${[
     totalCSSChunksSize
   )}</code></summary>
 
-
+\
 ${getFilesSummary(css)}
 || Chunk file name | Size |
 | :---: | :--- | :--- |

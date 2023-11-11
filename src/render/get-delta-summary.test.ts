@@ -37,7 +37,7 @@ describe("get-delta-summary", () => {
     };
 
     expect(getDeltaSummary(comparison)).toEqual(
-      "💥 Total bundle size increased `+50B (+100.00%)`"
+      "🏋️ Total bundle size increased `+50B (+100.00%)`"
     );
   });
 
@@ -48,7 +48,7 @@ describe("get-delta-summary", () => {
     };
 
     expect(getDeltaSummary(comparison)).toEqual(
-      "💥 Total bundle size increased `+10B (+27.03%)`"
+      "🏋️ Total bundle size increased `+10B (+27.03%)`"
     );
   });
 
@@ -140,7 +140,7 @@ describe("get-delta-summary", () => {
     };
 
     expect(getDeltaSummary(comparison)).toEqual(
-      "💥 Total bundle size increased `+1.87kB (+52.39%)`"
+      "🏋️ Total bundle size increased `+1.87kB (+52.39%)`"
     );
   });
 

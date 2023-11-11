@@ -56,5 +56,5 @@ export const getDeltaSummary = (comparison: ComparisonReport) => {
 
   return totalDelta < 0
     ? `🎉 Total bundle size decreased \`${sizeStats}\``
-    : `💥 Total bundle size increased \`${sizeStats}\``;
+    : `🏋️ Total bundle size increased \`${sizeStats}\``;
 };
