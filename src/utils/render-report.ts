@@ -33,7 +33,7 @@ const addedEntries = (
   getTableRows(entries, (title: string, size: number) => [
     "+",
     title,
-    `${formatBytes(size)}`,
+    `${formatBytes(size, true)}`,
     ...getDetails(size, 0, totalChunksSize),
   ]);
 
@@ -63,7 +63,7 @@ const removedEntries = (entries: Record<string, FileSizeInfo>) =>
   getTableRows(entries, (title: string, size: number) => [
     "−",
     title,
-    `${formatBytes(size)}`,
+    `${formatBytes(size, true)}`,
   ]);
 
 export const renderReport = (comparison: ComparisonReport) => {
@@ -90,7 +90,7 @@ export const renderReport = (comparison: ComparisonReport) => {
 
   return `# Bundle Size Report
 
-${[getDeltaSummary(comparison), getFilesSummary(pages)].join("\\\n")}
+${[getDeltaSummary(comparison), getFilesSummary(pages, "files")].join("\\\n")}
 
 || Route | Size | Total size | % of \`${formatBytes(budget)}\` budget |
 | :---: | :--- | :--- | ---: | :--- |

@@ -217,7 +217,7 @@ const getFilesSummary = (changes, type = "files") => {
     const addedCount = Object.keys(changes.added).length;
     const changedCount = Object.keys(changes.changed).length;
     const removedCount = Object.keys(changes.removed).length;
-    return `${icon} \`${addedCount}\` new, \`${changedCount}\` changed, \`${removedCount}\` deleted ${type}`;
+    return `${icon} \`${addedCount}\` new, \`${changedCount}\` changed and \`${removedCount}\` deleted ${type}`;
 };
 
 const renderRow = (args) => `| ${args.join(" | ")} |`;
@@ -245,7 +245,7 @@ const getDetails = (size, delta, totalChunksSize) => {
 const addedEntries = (entries, totalChunksSize) => getTableRows(entries, (title, size) => [
     "+",
     title,
-    `${formatBytes(size)}`,
+    `${formatBytes(size, true)}`,
     ...getDetails(size, 0, totalChunksSize),
 ]);
 const changedEntries = (entries, totalChunksSize) => getTableRows(entries, (title, size, delta) => [
@@ -263,7 +263,7 @@ const unchangedEntries = (entries, totalChunksSize) => getTableRows(entries, (ti
 const removedEntries = (entries) => getTableRows(entries, (title, size) => [
     "−",
     title,
-    `${formatBytes(size)}`,
+    `${formatBytes(size, true)}`,
 ]);
 const renderReport = (comparison) => {
     const { pages, chunks } = comparison;
@@ -280,7 +280,7 @@ const renderReport = (comparison) => {
     }, "size");
     return `# Bundle Size Report
 
-${[getDeltaSummary(comparison), getFilesSummary(pages)].join("\\\n")}
+${[getDeltaSummary(comparison), getFilesSummary(pages, "files")].join("\\\n")}
 
 || Route | Size | Total size | % of \`${formatBytes(budget$1)}\` budget |
 | :---: | :--- | :--- | ---: | :--- |

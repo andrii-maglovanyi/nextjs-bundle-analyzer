@@ -10,5 +10,5 @@ export const getFilesSummary = (
   const changedCount = Object.keys(changes.changed).length;
   const removedCount = Object.keys(changes.removed).length;
 
-  return `${icon} \`${addedCount}\` new, \`${changedCount}\` changed, \`${removedCount}\` deleted ${type}`;
+  return `${icon} \`${addedCount}\` new, \`${changedCount}\` changed and \`${removedCount}\` deleted ${type}`;
 };
