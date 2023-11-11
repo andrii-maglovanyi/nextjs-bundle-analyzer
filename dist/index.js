@@ -235,13 +235,14 @@ const getDetails = (size, delta, totalChunksSize) => {
     if (!totalChunksSize)
         return ["", ""];
     const totalSize = size + totalChunksSize;
-    const percentageChange = delta ? ` (${getPercentage(delta)}%)` : "";
+    const sign = delta > 0 ? "+" : "-";
+    const percentageChange = delta ? ` (${sign}${getPercentage(delta)}%)` : "";
     return [
         formatBytes(totalSize),
         `${getPercentage(size + totalSize)}% ${percentageChange}`,
     ];
 };
-const addedEntries = (entries, totalChunksSize) => getTableRows(entries, (title, size, delta) => [
+const addedEntries = (entries, totalChunksSize) => getTableRows(entries, (title, size) => [
     "+",
     title,
     `${formatBytes(size)}`,
@@ -259,7 +260,7 @@ const unchangedEntries = (entries, totalChunksSize) => getTableRows(entries, (ti
     formatBytes(size),
     ...getDetails(size, 0, totalChunksSize),
 ]);
-const removedEntries = (entries) => getTableRows(entries, (title, size, delta) => [
+const removedEntries = (entries) => getTableRows(entries, (title, size) => [
     "−",
     title,
     `${formatBytes(size)}`,
@@ -281,7 +282,7 @@ const renderReport = (comparison) => {
 
 ${[getDeltaSummary(comparison), getFilesSummary(pages)].join("\\\n")}
 
-|| Route | Size | Total size | % of Budget (\`${formatBytes(budget$1)}\`) |
+|| Route | Size | Total size | % of \`${formatBytes(budget$1)}\` budget |
 | :---: | :--- | :--- | ---: | :--- |
 ${[
         addedEntries(pages.added, totalJSChunksSize),
@@ -293,9 +294,11 @@ ${[
         .join("\n")}
 
 <details>
-<summary>JS shared by all pages <code>${formatBytes(totalJSChunksSize)}</code></summary>
+<summary>
+  JS shared by all pages <code>${formatBytes(totalJSChunksSize)}</code>
+</summary>
+<br>
 
-\
 ${getFilesSummary(js)}
 || Chunk file name | Size |
 | :---: | :--- | :--- |
@@ -311,9 +314,11 @@ ${[
 </details>
 
 <details>
-<summary>CSS shared by all pages <code>${formatBytes(totalCSSChunksSize)}</code></summary>
+<summary>
+CSS shared by all pages <code>${formatBytes(totalCSSChunksSize)}</code>
+</summary>
+<br>
 
-\
 ${getFilesSummary(css)}
 || Chunk file name | Size |
 | :---: | :--- | :--- |

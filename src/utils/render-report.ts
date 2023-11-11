@@ -17,7 +17,8 @@ const getDetails = (size: number, delta: number, totalChunksSize?: number) => {
   if (!totalChunksSize) return ["", ""];
 
   const totalSize = size + totalChunksSize;
-  const percentageChange = delta ? ` (${getPercentage(delta)}%)` : "";
+  const sign = delta > 0 ? "+" : "-";
+  const percentageChange = delta ? ` (${sign}${getPercentage(delta)}%)` : "";
 
   return [
     formatBytes(totalSize),
@@ -29,7 +30,7 @@ const addedEntries = (
   entries: Record<string, FileSizeInfo>,
   totalChunksSize?: number
 ) =>
-  getTableRows(entries, (title: string, size: number, delta: number) => [
+  getTableRows(entries, (title: string, size: number) => [
     "+",
     title,
     `${formatBytes(size)}`,
@@ -59,7 +60,7 @@ const unchangedEntries = (
   ]);
 
 const removedEntries = (entries: Record<string, FileSizeInfo>) =>
-  getTableRows(entries, (title: string, size: number, delta: number) => [
+  getTableRows(entries, (title: string, size: number) => [
     "−",
     title,
     `${formatBytes(size)}`,
@@ -91,7 +92,7 @@ export const renderReport = (comparison: ComparisonReport) => {
 
 ${[getDeltaSummary(comparison), getFilesSummary(pages)].join("\\\n")}
 
-|| Route | Size | Total size | % of Budget (\`${formatBytes(budget)}\`) |
+|| Route | Size | Total size | % of \`${formatBytes(budget)}\` budget |
 | :---: | :--- | :--- | ---: | :--- |
 ${[
   addedEntries(pages.added, totalJSChunksSize),
@@ -103,11 +104,11 @@ ${[
   .join("\n")}
 
 <details>
-<summary>JS shared by all pages <code>${formatBytes(
-    totalJSChunksSize
-  )}</code></summary>
+<summary>
+  JS shared by all pages <code>${formatBytes(totalJSChunksSize)}</code>
+</summary>
+<br>
 
-\
 ${getFilesSummary(js)}
 || Chunk file name | Size |
 | :---: | :--- | :--- |
@@ -123,11 +124,11 @@ ${[
 </details>
 
 <details>
-<summary>CSS shared by all pages <code>${formatBytes(
-    totalCSSChunksSize
-  )}</code></summary>
+<summary>
+CSS shared by all pages <code>${formatBytes(totalCSSChunksSize)}</code>
+</summary>
+<br>
 
-\
 ${getFilesSummary(css)}
 || Chunk file name | Size |
 | :---: | :--- | :--- |
