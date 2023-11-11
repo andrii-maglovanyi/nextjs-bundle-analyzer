@@ -44,11 +44,9 @@ runs:
       if: success() && github.event.number
       run: |
         body=$(cat ${{ inputs.prefix }}/analyze/report.txt)
-        body="${body//'%'/'%25'}"
-        body="${body//$'\n'/'%0A'}"
-        body="${body//$'\r'/'%0D'}"
-        # Use GITHUB_ENV to set an environment variable
-        echo "body=$body" >> $GITHUB_ENV
+        # body="${body//'%'/'%25'}"
+        # body="${body//$'\n'/'%0A'}"
+        # body="${body//$'\r'/'%0D'}"
         # Use GITHUB_OUTPUT to set the output parameter
         echo "body<<EOF" >> $GITHUB_OUTPUT
         echo "$body" >> $GITHUB_OUTPUT
