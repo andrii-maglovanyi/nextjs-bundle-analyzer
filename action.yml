@@ -26,7 +26,7 @@ runs:
         workflow: ${{ inputs.workflow-id }}
         if_no_artifact_found: ignore
         branch: ${{ inputs.default-branch }}
-        path: ${{ inputs.prefix }}/analyze/${{ inputs.default-branch }}
+        path: ${{ inputs.prefix }}/analyze
 
     - name: Generate analysis report
       run: mkdir -p ${{ inputs.prefix }}/analyze/${{ inputs.default-branch }} && node ${{ github.action_path }}/dist/index.js
