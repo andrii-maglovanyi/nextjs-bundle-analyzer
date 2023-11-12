@@ -15,12 +15,6 @@ try {
   const prefix = core.getInput("prefix") || ".next";
   const budget = +core.getInput("budget") || 200;
 
-  console.log("SET BUDEGT", budget);
-  console.log("SET PREFIX", prefix);
-  console.log("SET BRANCH", branch);
-  console.log(`The event payload: ${core.summary}`);
-  console.log(JSON.stringify(process.env, null, 2));
-
   setPrefix(prefix);
   setBudget(budget);
 
@@ -51,6 +45,10 @@ try {
   const currentReport = getAnalysis(appBuildManifest);
   const comparison = getComparison(baseReport, currentReport);
   const comparisonReport = renderReport(comparison);
+
+  console.log("CCCC", comparisonReport);
+  console.log("EXPORT JSON", exportReportPath);
+  console.log("EXPORT TXT", exportPath);
 
   exportToFile(exportReportPath, "report.json")(JSON.stringify(currentReport));
   exportToFile(exportPath, "report.txt")(comparisonReport);
