@@ -28,12 +28,8 @@ runs:
         branch: ${{ inputs.default-branch }}
         path: ${{ inputs.prefix }}/analyze
 
-    - name: Debug env
-      run: env | grep INPUT_
-      shell: bash
-
     - name: Generate analysis report
-      run: mkdir -p ${{ inputs.prefix }}/analyze/${{ inputs.default-branch }} && node ${{ github.action_path }}/dist/index.js
+      run: echo ${{ inputs.budget }} && mkdir -p ${{ inputs.prefix }}/analyze/${{ inputs.default-branch }} && node ${{ github.action_path }}/dist/index.js
       shell: bash
 
     - name: Upload report
