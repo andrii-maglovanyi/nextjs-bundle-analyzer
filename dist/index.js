@@ -26,11 +26,11 @@ import require$$6 from 'string_decoder';
 import require$$0$8 from 'diagnostics_channel';
 
 let prefix = ".next";
-let budget$1 = 200 * 1024;
+let budget = 200 * 1024;
 const setPrefix = (newPrefix) => (prefix = newPrefix);
 const getPrefix = () => prefix;
-const setBudget = (newBudget) => (budget$1 = newBudget * 1024);
-const getBudget = () => budget$1;
+const setBudget = (newBudget) => (budget = newBudget * 1024);
+const getBudget = () => budget;
 
 const getFileSizes = (pathToFile) => {
     const fullPath = path.join(process.cwd(), getPrefix(), pathToFile);
@@ -229,8 +229,7 @@ const getTableRows = (data, cb) => Object.entries(data)
 
 const getSum = (obj, prop) => Object.values(obj).reduce((total, value) => total + +value[prop], 0);
 
-const budget = getBudget();
-const getPercentage = (size) => ((size / budget) * 100).toFixed(2);
+const getPercentage = (size) => ((size / getBudget()) * 100).toFixed(2);
 const getDetails = (size, delta, totalChunksSize) => {
     if (!totalChunksSize)
         return ["", ""];
@@ -282,7 +281,7 @@ const renderReport = (comparison) => {
 
 ${[getDeltaSummary(comparison), getFilesSummary(pages, "pages")].join("\\\n")}
 
-|| Route | Size | Total size | % of \`${formatBytes(budget)}\` budget |
+|| Route | Size | Total size | % of \`${formatBytes(getBudget())}\` budget |
 | :---: | :--- | :--- | ---: | :--- |
 ${[
         addedEntries(pages.added, totalJSChunksSize),

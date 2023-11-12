@@ -9,9 +9,7 @@ import {
 import { formatBytes } from "./format-bytes.js";
 import { getSum } from "./get-sum.js";
 
-const budget = getBudget();
-
-const getPercentage = (size: number) => ((size / budget) * 100).toFixed(2);
+const getPercentage = (size: number) => ((size / getBudget()) * 100).toFixed(2);
 
 const getDetails = (size: number, delta: number, totalChunksSize?: number) => {
   if (!totalChunksSize) return ["", ""];
@@ -92,7 +90,7 @@ export const renderReport = (comparison: ComparisonReport) => {
 
 ${[getDeltaSummary(comparison), getFilesSummary(pages, "pages")].join("\\\n")}
 
-|| Route | Size | Total size | % of \`${formatBytes(budget)}\` budget |
+|| Route | Size | Total size | % of \`${formatBytes(getBudget())}\` budget |
 | :---: | :--- | :--- | ---: | :--- |
 ${[
   addedEntries(pages.added, totalJSChunksSize),
