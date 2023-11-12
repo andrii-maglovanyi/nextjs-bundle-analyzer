@@ -30,6 +30,7 @@ runs:
 
     - name: Debug env
       run: env | grep INPUT_
+      shell: bash
 
     - name: Generate analysis report
       run: mkdir -p ${{ inputs.prefix }}/analyze/${{ inputs.default-branch }} && node ${{ github.action_path }}/dist/index.js
