@@ -16,6 +16,8 @@ try {
   const budget = +core.getInput("budget") || 200;
 
   console.log("SET BUDEGT", budget);
+  console.log("SET PREFIX", prefix);
+  console.log("SET BRANCH", branch);
   console.log(`The event payload: ${core.summary}`);
   console.log(JSON.stringify(process.env, null, 2));
 

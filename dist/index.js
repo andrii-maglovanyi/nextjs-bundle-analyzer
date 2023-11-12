@@ -25508,6 +25508,8 @@ try {
     const prefix = coreExports.getInput("prefix") || ".next";
     const budget = +coreExports.getInput("budget") || 200;
     console.log("SET BUDEGT", budget);
+    console.log("SET PREFIX", prefix);
+    console.log("SET BRANCH", branch);
     console.log(`The event payload: ${coreExports.summary}`);
     console.log(JSON.stringify(process.env, null, 2));
     setPrefix(prefix);
