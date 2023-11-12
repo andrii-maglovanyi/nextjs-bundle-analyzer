@@ -6,7 +6,7 @@ export const loadJSON = (filePath: string) => {
 
   const data = fs.readFileSync(
     new URL(path.join(root, filePath), import.meta.url),
-    "utf-8"
+    "utf-8",
   );
 
   return JSON.parse(data);

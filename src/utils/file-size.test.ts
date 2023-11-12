@@ -13,7 +13,7 @@ describe("file-size", () => {
 
   test("should throw an error if the file does not exist", () => {
     expect(() => getFileSizes("no-such-file.txt")).toThrow(
-      "ENOENT: no such file or directory"
+      "ENOENT: no such file or directory",
     );
   });
 });

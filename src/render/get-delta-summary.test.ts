@@ -8,24 +8,24 @@ const emptyStats = {
 };
 
 let comparison = {
+  chunks: {
+    css: emptyStats,
+    js: emptyStats,
+  },
   pages: {
     ...emptyStats,
-  },
-  chunks: {
-    js: emptyStats,
-    css: emptyStats,
   },
 };
 
 describe("get-delta-summary", () => {
   beforeEach(() => {
     comparison = {
+      chunks: {
+        css: emptyStats,
+        js: emptyStats,
+      },
       pages: {
         ...emptyStats,
-      },
-      chunks: {
-        js: emptyStats,
-        css: emptyStats,
       },
     };
   });
@@ -37,7 +37,7 @@ describe("get-delta-summary", () => {
     };
 
     expect(getDeltaSummary(comparison)).toEqual(
-      "🏋️ Total bundle size increased `+50B (+100.00%)`"
+      "🏋️ Total bundle size increased `+50B (+100.00%)`",
     );
   });
 
@@ -48,7 +48,7 @@ describe("get-delta-summary", () => {
     };
 
     expect(getDeltaSummary(comparison)).toEqual(
-      "🏋️ Total bundle size increased `+10B (+27.03%)`"
+      "🏋️ Total bundle size increased `+10B (+27.03%)`",
     );
   });
 
@@ -59,7 +59,7 @@ describe("get-delta-summary", () => {
     };
 
     expect(getDeltaSummary(comparison)).toEqual(
-      "🎉 Total bundle size decreased `-204B (-100.00%)`"
+      "🎉 Total bundle size decreased `-204B (-100.00%)`",
     );
   });
 
@@ -70,7 +70,7 @@ describe("get-delta-summary", () => {
     };
 
     expect(getDeltaSummary(comparison)).toEqual(
-      "🤔 Total bundle size unchanged"
+      "🤔 Total bundle size unchanged",
     );
   });
 
@@ -84,20 +84,13 @@ describe("get-delta-summary", () => {
     };
 
     expect(getDeltaSummary(comparison)).toEqual(
-      "🎉 Total bundle size decreased `-144B (-42.73%)`"
+      "🎉 Total bundle size decreased `-144B (-42.73%)`",
     );
   });
 
   test("should return stats for multiple chunks", () => {
     comparison.chunks = {
       ...comparison.chunks,
-      js: {
-        ...emptyStats,
-        added: { "main.js": { delta: 50, size: 50 } },
-        changed: { "about.js": { delta: 10, size: 47 } },
-        removed: { "found.js": { delta: -204, size: 204 } },
-        unchanged: { "index.js": { delta: 0, size: 96 } },
-      },
       css: {
         ...emptyStats,
         added: { "main.css": { delta: 60, size: 60 } },
@@ -105,10 +98,17 @@ describe("get-delta-summary", () => {
         removed: { "found.css": { delta: -24, size: 24 } },
         unchanged: { "index.css": { delta: 0, size: 11 } },
       },
+      js: {
+        ...emptyStats,
+        added: { "main.js": { delta: 50, size: 50 } },
+        changed: { "about.js": { delta: 10, size: 47 } },
+        removed: { "found.js": { delta: -204, size: 204 } },
+        unchanged: { "index.js": { delta: 0, size: 96 } },
+      },
     };
 
     expect(getDeltaSummary(comparison)).toEqual(
-      "🎉 Total bundle size decreased `-86B (-22.51%)`"
+      "🎉 Total bundle size decreased `-86B (-22.51%)`",
     );
   });
 
@@ -123,13 +123,6 @@ describe("get-delta-summary", () => {
 
     comparison.chunks = {
       ...comparison.chunks,
-      js: {
-        ...emptyStats,
-        added: { "main.js": { delta: 140, size: 140 } },
-        changed: { "about.js": { delta: 10, size: 37 } },
-        removed: { "found.js": { delta: -1, size: 1 } },
-        unchanged: { "index.js": { delta: 0, size: 100 } },
-      },
       css: {
         ...emptyStats,
         added: { "main.css": { delta: 55, size: 55 } },
@@ -137,10 +130,17 @@ describe("get-delta-summary", () => {
         removed: { "found.css": { delta: -54, size: 54 } },
         unchanged: { "index.css": { delta: 0, size: 888 } },
       },
+      js: {
+        ...emptyStats,
+        added: { "main.js": { delta: 140, size: 140 } },
+        changed: { "about.js": { delta: 10, size: 37 } },
+        removed: { "found.js": { delta: -1, size: 1 } },
+        unchanged: { "index.js": { delta: 0, size: 100 } },
+      },
     };
 
     expect(getDeltaSummary(comparison)).toEqual(
-      "🏋️ Total bundle size increased `+1.87kB (+52.39%)`"
+      "🏋️ Total bundle size increased `+1.87kB (+52.39%)`",
     );
   });
 
@@ -152,18 +152,18 @@ describe("get-delta-summary", () => {
 
     comparison.chunks = {
       ...comparison.chunks,
-      js: {
-        ...emptyStats,
-        unchanged: { "index.js": { delta: 0, size: 100 } },
-      },
       css: {
         ...emptyStats,
         unchanged: { "index.css": { delta: 0, size: 888 } },
       },
+      js: {
+        ...emptyStats,
+        unchanged: { "index.js": { delta: 0, size: 100 } },
+      },
     };
 
     expect(getDeltaSummary(comparison)).toEqual(
-      "🤔 Total bundle size unchanged"
+      "🤔 Total bundle size unchanged",
     );
   });
 });

@@ -1,7 +1,6 @@
-import { getComparison } from "./get-comparison.js";
-
 import baseReport from "../__fixtures__/base-report.json";
 import currentReport from "../__fixtures__/current-report.json";
+import { getComparison } from "./get-comparison.js";
 
 describe("get-comparison", () => {
   test("should return the size of a file", () => {

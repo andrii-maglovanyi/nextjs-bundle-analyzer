@@ -1,6 +1,6 @@
 import {
-  type ComparisonResult,
   type ComparisonReport,
+  type ComparisonResult,
 } from "../steps/get-comparison.js";
 import { formatBytes } from "../utils/format-bytes.js";
 
@@ -11,7 +11,7 @@ const getDelta = ({ added, changed, removed }: ComparisonResult) =>
     ...removed,
   }).reduce((total, { delta }) => total + delta, 0);
 
-const getBaseSize = ({ changed, unchanged, removed }: ComparisonResult) => {
+const getBaseSize = ({ changed, removed, unchanged }: ComparisonResult) => {
   const sizeWithChangeDelta = Object.values({
     ...changed,
     ...unchanged,
@@ -20,7 +20,7 @@ const getBaseSize = ({ changed, unchanged, removed }: ComparisonResult) => {
 
   const changeDelta = Object.values(changed).reduce(
     (total, { delta }) => total + delta,
-    0
+    0,
   );
 
   return sizeWithChangeDelta - changeDelta;

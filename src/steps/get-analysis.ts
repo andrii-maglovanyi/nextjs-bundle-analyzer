@@ -25,16 +25,16 @@ export const getAnalysis = (manifest: Manifest<Pages>): Report => {
       ...acc,
       [page]: files.filter((file) => !fileToExclude.includes(file)),
     }),
-    {}
+    {},
   );
 
   const pageSizes = getPageSizes(pagesWithExcludedFiles);
 
   return {
-    pages: pageSizes,
     chunks: {
-      js: layout.jsFiles,
       css: layout.cssFiles,
+      js: layout.jsFiles,
     },
+    pages: pageSizes,
   };
 };

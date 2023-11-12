@@ -25,8 +25,8 @@ const getStats = (base: FileSizes, current: FileSizes): ComparisonResult => {
   const result: ComparisonResult = {
     added: {},
     changed: {},
-    unchanged: {},
     removed: {},
+    unchanged: {},
   };
 
   // Compare
@@ -36,11 +36,11 @@ const getStats = (base: FileSizes, current: FileSizes): ComparisonResult => {
     const delta = currentSize - baseSize;
 
     if (delta > 0) {
-      result.changed[key] = { size: currentSize, delta };
+      result.changed[key] = { delta, size: currentSize };
     } else if (delta < 0) {
-      result.changed[key] = { size: currentSize, delta };
+      result.changed[key] = { delta, size: currentSize };
     } else {
-      result.unchanged[key] = { size: currentSize, delta };
+      result.unchanged[key] = { delta, size: currentSize };
     }
   }
 
@@ -48,7 +48,7 @@ const getStats = (base: FileSizes, current: FileSizes): ComparisonResult => {
   for (const key of Object.keys(current)) {
     if (!base[key]) {
       const currentSize = current[key];
-      result.added[key] = { size: currentSize, delta: currentSize };
+      result.added[key] = { delta: currentSize, size: currentSize };
     }
   }
 
@@ -56,7 +56,7 @@ const getStats = (base: FileSizes, current: FileSizes): ComparisonResult => {
   for (const key of Object.keys(base)) {
     if (!current[key]) {
       const baseSize = base[key];
-      result.removed[key] = { size: baseSize, delta: -baseSize };
+      result.removed[key] = { delta: -baseSize, size: baseSize };
       // Remove the entry from "changed" if it's also marked as "removed"
       delete result.changed[key];
     }
@@ -67,11 +67,11 @@ const getStats = (base: FileSizes, current: FileSizes): ComparisonResult => {
 
 export const getComparison = (
   baseReport: Report,
-  currentReport: Report
+  currentReport: Report,
 ): ComparisonReport => ({
-  pages: getStats(baseReport.pages, currentReport.pages),
   chunks: {
-    js: getStats(baseReport.chunks.js, currentReport.chunks.js),
     css: getStats(baseReport.chunks.css, currentReport.chunks.css),
+    js: getStats(baseReport.chunks.js, currentReport.chunks.js),
   },
+  pages: getStats(baseReport.pages, currentReport.pages),
 });

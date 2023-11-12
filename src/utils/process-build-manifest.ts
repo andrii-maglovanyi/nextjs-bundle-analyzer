@@ -11,7 +11,7 @@ interface PagesWithLayout extends Pages {
 }
 
 const hasLayoutEntry = (
-  manifest: Manifest<Pages>
+  manifest: Manifest<Pages>,
 ): manifest is Manifest<PagesWithLayout> => "/layout" in manifest.pages;
 
 export const processBuildManifest = (manifest: Manifest<Pages>) => {
@@ -23,7 +23,7 @@ export const processBuildManifest = (manifest: Manifest<Pages>) => {
 
   const layoutFilesSize = layoutFiles.reduce(
     (files, filename) => ({ ...files, ...getFileSizes(filename) }),
-    {} as FileSizes
+    {} as FileSizes,
   );
 
   const jsFiles: Record<string, number> = {};
@@ -41,11 +41,11 @@ export const processBuildManifest = (manifest: Manifest<Pages>) => {
   }
 
   return {
-    layout: {
-      jsFiles,
-      cssFiles,
-    },
     indexLayoutSize,
+    layout: {
+      cssFiles,
+      jsFiles,
+    },
     pages,
   };
 };

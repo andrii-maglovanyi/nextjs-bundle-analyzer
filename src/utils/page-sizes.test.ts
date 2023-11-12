@@ -1,6 +1,6 @@
-import { getPageSizes } from "./page-sizes.js";
 import pages from "../__fixtures__/pages.json";
 import { setPrefix } from "../config.js";
+import { getPageSizes } from "./page-sizes.js";
 
 describe("page-sizes", () => {
   beforeAll(() => {

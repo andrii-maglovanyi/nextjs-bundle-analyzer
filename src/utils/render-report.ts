@@ -26,7 +26,7 @@ const getDetails = (size: number, delta: number, totalChunksSize?: number) => {
 
 const addedEntries = (
   entries: Record<string, FileSizeInfo>,
-  totalChunksSize?: number
+  totalChunksSize?: number,
 ) =>
   getTableRows(entries, (title: string, size: number) => [
     "+",
@@ -37,7 +37,7 @@ const addedEntries = (
 
 const changedEntries = (
   entries: Record<string, FileSizeInfo>,
-  totalChunksSize?: number
+  totalChunksSize?: number,
 ) =>
   getTableRows(entries, (title: string, size: number, delta: number) => [
     "±",
@@ -48,7 +48,7 @@ const changedEntries = (
 
 const unchangedEntries = (
   entries: Record<string, FileSizeInfo>,
-  totalChunksSize?: number
+  totalChunksSize?: number,
 ) =>
   getTableRows(entries, (title: string, size: number) => [
     "",
@@ -65,8 +65,8 @@ const removedEntries = (entries: Record<string, FileSizeInfo>) =>
   ]);
 
 export const renderReport = (comparison: ComparisonReport) => {
-  const { pages, chunks } = comparison;
-  const { js, css } = chunks;
+  const { chunks, pages } = comparison;
+  const { css, js } = chunks;
 
   const totalJSChunksSize = getSum<FileSizeInfo>(
     {
@@ -74,7 +74,7 @@ export const renderReport = (comparison: ComparisonReport) => {
       ...js.changed,
       ...js.unchanged,
     },
-    "size"
+    "size",
   );
 
   const totalCSSChunksSize = getSum<FileSizeInfo>(
@@ -83,7 +83,7 @@ export const renderReport = (comparison: ComparisonReport) => {
       ...css.changed,
       ...css.unchanged,
     },
-    "size"
+    "size",
   );
 
   return `# Bundle Size Report

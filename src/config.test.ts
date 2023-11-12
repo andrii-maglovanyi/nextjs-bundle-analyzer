@@ -1,4 +1,4 @@
-import { setPrefix, getPrefix, setBudget, getBudget } from "./config.js";
+import { getBudget, getPrefix, setBudget, setPrefix } from "./config.js";
 
 describe("Config", () => {
   describe("Prefix", () => {

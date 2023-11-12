@@ -3,8 +3,8 @@ import { getTableRows } from "./get-table-rows.js";
 describe("get-table-rows", () => {
   test("should return table rows", () => {
     const data = {
-      "/": { size: 100, delta: 0 },
-      "/about": { size: 200, delta: 20 },
+      "/": { delta: 0, size: 100 },
+      "/about": { delta: 20, size: 200 },
     };
 
     const expected = `| / | 100B | 0% |
@@ -15,7 +15,7 @@ describe("get-table-rows", () => {
         title,
         `${size}B`,
         `${delta}%`,
-      ])
+      ]),
     ).toEqual(expected);
   });
 

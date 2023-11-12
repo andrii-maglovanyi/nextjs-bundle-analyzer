@@ -1,6 +1,7 @@
 import fs from "fs";
 import path from "path";
 import zlib from "zlib";
+
 import { getPrefix } from "../config.js";
 
 export interface FileSizes {

@@ -1,8 +1,7 @@
-import { getAnalysis } from "./get-analysis.js";
-
 import manifest from "../__fixtures__/app-build-manifest.json";
 import currentReport from "../__fixtures__/current-report.json";
 import { setPrefix } from "../config.js";
+import { getAnalysis } from "./get-analysis.js";
 
 describe("get-analysis", () => {
   beforeAll(() => {

@@ -1,8 +1,7 @@
-import { processBuildManifest } from "./process-build-manifest.js";
-
 import manifest from "../__fixtures__/app-build-manifest.json";
 import pages from "../__fixtures__/pages.json";
 import { setPrefix } from "../config.js";
+import { processBuildManifest } from "./process-build-manifest.js";
 
 describe("process-build-manifest", () => {
   beforeAll(() => {
@@ -31,7 +30,7 @@ describe("process-build-manifest", () => {
     };
 
     expect(() => processBuildManifest(manifestWithoutLayout)).toThrow(
-      "No layout entry in build manifest!"
+      "No layout entry in build manifest!",
     );
   });
 });

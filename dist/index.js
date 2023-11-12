@@ -1,7 +1,6 @@
+import require$$0 from 'os';
 import fs$1 from 'fs';
 import path from 'path';
-import zlib from 'zlib';
-import require$$0 from 'os';
 import require$$2$1 from 'http';
 import require$$3 from 'https';
 import require$$0$4 from 'net';
@@ -22,318 +21,9 @@ import require$$5 from 'util/types';
 import require$$4$1 from 'async_hooks';
 import require$$1$2 from 'console';
 import require$$1$3 from 'url';
+import require$$3$1 from 'zlib';
 import require$$6 from 'string_decoder';
 import require$$0$8 from 'diagnostics_channel';
-
-let prefix = ".next";
-let budget = 200 * 1024;
-const setPrefix = (newPrefix) => (prefix = newPrefix);
-const getPrefix = () => prefix;
-const setBudget = (newBudget) => (budget = newBudget * 1024);
-const getBudget = () => budget;
-
-const getFileSizes = (pathToFile) => {
-    const fullPath = path.join(process.cwd(), getPrefix(), pathToFile);
-    const bytes = fs$1.readFileSync(fullPath);
-    const zippedBytes = zlib.gzipSync(bytes);
-    return { [pathToFile]: zippedBytes.byteLength };
-};
-
-const getPageSizes = (pages) => Object.entries(pages).reduce((acc, [page, files]) => {
-    const size = files
-        .map((filename) => getFileSizes(filename)[filename])
-        .reduce((s, b) => s + b, 0);
-    return { ...acc, [page.replace("/page", "") || "/"]: size };
-}, {});
-
-const hasLayoutEntry = (manifest) => "/layout" in manifest.pages;
-const processBuildManifest = (manifest) => {
-    if (!hasLayoutEntry(manifest)) {
-        throw new Error("No layout entry in build manifest!");
-    }
-    const { ["/layout"]: layoutFiles, ...pages } = manifest.pages;
-    const layoutFilesSize = layoutFiles.reduce((files, filename) => ({ ...files, ...getFileSizes(filename) }), {});
-    const jsFiles = {};
-    const cssFiles = {};
-    let indexLayoutSize = 0;
-    for (const [filename, size] of Object.entries(layoutFilesSize)) {
-        if (filename.includes("static/chunks/app/layout")) {
-            indexLayoutSize = size;
-        }
-        else if (filename.endsWith(".css")) {
-            cssFiles[filename] = size;
-        }
-        else if (filename.endsWith(".js")) {
-            jsFiles[filename] = size;
-        }
-    }
-    return {
-        layout: {
-            jsFiles,
-            cssFiles,
-        },
-        indexLayoutSize,
-        pages,
-    };
-};
-
-const getAnalysis = (manifest) => {
-    const { layout, pages } = processBuildManifest(manifest);
-    const fileToExclude = Object.keys(layout.jsFiles);
-    // Don't include the common files in the page sizes
-    const pagesWithExcludedFiles = Object.entries(pages).reduce((acc, [page, files]) => ({
-        ...acc,
-        [page]: files.filter((file) => !fileToExclude.includes(file)),
-    }), {});
-    const pageSizes = getPageSizes(pagesWithExcludedFiles);
-    return {
-        pages: pageSizes,
-        chunks: {
-            js: layout.jsFiles,
-            css: layout.cssFiles,
-        },
-    };
-};
-
-const getStats = (base, current) => {
-    const result = {
-        added: {},
-        changed: {},
-        unchanged: {},
-        removed: {},
-    };
-    // Compare
-    for (const key of Object.keys(base)) {
-        const baseSize = base[key] || 0;
-        const currentSize = current[key] || 0;
-        const delta = currentSize - baseSize;
-        if (delta > 0) {
-            result.changed[key] = { size: currentSize, delta };
-        }
-        else if (delta < 0) {
-            result.changed[key] = { size: currentSize, delta };
-        }
-        else {
-            result.unchanged[key] = { size: currentSize, delta };
-        }
-    }
-    // Find added
-    for (const key of Object.keys(current)) {
-        if (!base[key]) {
-            const currentSize = current[key];
-            result.added[key] = { size: currentSize, delta: currentSize };
-        }
-    }
-    // Find removed
-    for (const key of Object.keys(base)) {
-        if (!current[key]) {
-            const baseSize = base[key];
-            result.removed[key] = { size: baseSize, delta: -baseSize };
-            // Remove the entry from "changed" if it's also marked as "removed"
-            delete result.changed[key];
-        }
-    }
-    return result;
-};
-const getComparison = (baseReport, currentReport) => ({
-    pages: getStats(baseReport.pages, currentReport.pages),
-    chunks: {
-        js: getStats(baseReport.chunks.js, currentReport.chunks.js),
-        css: getStats(baseReport.chunks.css, currentReport.chunks.css),
-    },
-});
-
-const exportToFile = (dirPath, fileName) => (data) => {
-    const root = process.env.GITHUB_WORKSPACE || process.cwd();
-    const outDir = path.join(root, dirPath);
-    const outFile = path.join(outDir, fileName);
-    try {
-        fs$1.mkdirSync(outDir);
-    }
-    catch (e) {
-        // Ignore (dir exists)
-    }
-    fs$1.writeFileSync(outFile, data);
-};
-
-const loadJSON = (filePath) => {
-    const root = process.env.GITHUB_WORKSPACE || process.cwd();
-    const data = fs$1.readFileSync(new URL(path.join(root, filePath), import.meta.url), "utf-8");
-    return JSON.parse(data);
-};
-
-const kb = 1024;
-const sizes = ["B", "kB", "mB", "gB", "tB"];
-const formatBytes = (bytes, signed = false) => {
-    const sign = signed ? (bytes < 0 ? "-" : "+") : "";
-    if (bytes === 0)
-        return `${sign}0B`;
-    const i = Math.floor(Math.log(Math.abs(bytes)) / Math.log(kb));
-    return `${sign}${parseFloat(Math.abs(bytes / Math.pow(kb, i)).toFixed(2))}${sizes[i]}`;
-};
-
-const getDelta = ({ added, changed, removed }) => Object.values({
-    ...added,
-    ...changed,
-    ...removed,
-}).reduce((total, { delta }) => total + delta, 0);
-const getBaseSize = ({ changed, unchanged, removed }) => {
-    const sizeWithChangeDelta = Object.values({
-        ...changed,
-        ...unchanged,
-        ...removed,
-    }).reduce((total, { size }) => total + size, 0);
-    const changeDelta = Object.values(changed).reduce((total, { delta }) => total + delta, 0);
-    return sizeWithChangeDelta - changeDelta;
-};
-const getDeltaSummary = (comparison) => {
-    const pagesSize = getBaseSize(comparison.pages);
-    const jsSize = getBaseSize(comparison.chunks.js);
-    const cssSize = getBaseSize(comparison.chunks.css);
-    const pagesDelta = getDelta(comparison.pages);
-    const jsDelta = getDelta(comparison.chunks.js);
-    const cssDelta = getDelta(comparison.chunks.css);
-    const totalDelta = pagesDelta + jsDelta + cssDelta;
-    const totalBaseSize = pagesSize + jsSize + cssSize;
-    const sign = totalDelta < 0 ? "-" : "+";
-    const percent = totalDelta && totalBaseSize
-        ? totalDelta / totalBaseSize
-        : totalBaseSize
-            ? 0
-            : 1;
-    const sizeChangeInPct = totalDelta
-        ? ` (${sign}${Math.abs(percent * 100).toFixed(2)}%)`
-        : "";
-    const sizeStats = `${formatBytes(totalDelta, true)}${sizeChangeInPct}`;
-    if (totalDelta === 0)
-        return "🤔 Total bundle size unchanged";
-    return totalDelta < 0
-        ? `🎉 Total bundle size decreased \`${sizeStats}\``
-        : `🏋️ Total bundle size increased \`${sizeStats}\``;
-};
-
-const getFilesSummary = (changes, type = "files") => {
-    const icon = type === "files" ? "📦" : "📄";
-    const addedCount = Object.keys(changes.added).length;
-    const changedCount = Object.keys(changes.changed).length;
-    const removedCount = Object.keys(changes.removed).length;
-    return `${icon} \`${addedCount}\` new, \`${changedCount}\` changed and \`${removedCount}\` deleted ${type}`;
-};
-
-const renderRow = (args) => `| ${args.join(" | ")} |`;
-const getTableRows = (data, cb) => Object.entries(data)
-    .sort((a, b) => a[0].localeCompare(b[0]))
-    .map(([page, { size, delta }]) => cb(page, size, delta))
-    .map(renderRow)
-    .join("\n");
-
-const getSum = (obj, prop) => Object.values(obj).reduce((total, value) => total + +value[prop], 0);
-
-const getPercentage = (size) => ((size / getBudget()) * 100).toFixed(2);
-const getDetails = (size, delta, totalChunksSize) => {
-    if (!totalChunksSize)
-        return ["", ""];
-    const totalSize = size + totalChunksSize;
-    const sign = delta > 0 ? "+" : "";
-    const percentageChange = delta ? ` (${sign}${getPercentage(delta)}%)` : "";
-    return [
-        formatBytes(totalSize),
-        `${getPercentage(size + totalSize)}% ${percentageChange}`,
-    ];
-};
-const addedEntries = (entries, totalChunksSize) => getTableRows(entries, (title, size) => [
-    "+",
-    title,
-    `+${formatBytes(size)}`,
-    ...getDetails(size, 0, totalChunksSize),
-]);
-const changedEntries = (entries, totalChunksSize) => getTableRows(entries, (title, size, delta) => [
-    "±",
-    title,
-    `${formatBytes(size)} (${formatBytes(delta, true)})`,
-    ...getDetails(size, delta, totalChunksSize),
-]);
-const unchangedEntries = (entries, totalChunksSize) => getTableRows(entries, (title, size) => [
-    "",
-    title,
-    formatBytes(size),
-    ...getDetails(size, 0, totalChunksSize),
-]);
-const removedEntries = (entries) => getTableRows(entries, (title, size) => [
-    "−",
-    title,
-    `-${formatBytes(size)}`,
-]);
-const renderReport = (comparison) => {
-    const { pages, chunks } = comparison;
-    const { js, css } = chunks;
-    const totalJSChunksSize = getSum({
-        ...js.added,
-        ...js.changed,
-        ...js.unchanged,
-    }, "size");
-    const totalCSSChunksSize = getSum({
-        ...css.added,
-        ...css.changed,
-        ...css.unchanged,
-    }, "size");
-    return `# Bundle Size Report
-
-${[getDeltaSummary(comparison), getFilesSummary(pages, "pages")].join("\\\n")}
-
-|| Route | Size | Total size | % of \`${formatBytes(getBudget())}\` budget |
-| :---: | :--- | :--- | ---: | :--- |
-${[
-        addedEntries(pages.added, totalJSChunksSize),
-        changedEntries(pages.changed, totalJSChunksSize),
-        unchangedEntries(pages.unchanged, totalJSChunksSize),
-        removedEntries(pages.removed),
-    ]
-        .filter((item) => item)
-        .join("\n")}
-
-<details>
-<summary>
-  JS shared by all pages <code>${formatBytes(totalJSChunksSize)}</code>
-</summary>
-<br>
-
-${getFilesSummary(js)}
-|| Chunk file name | Size |
-| :---: | :--- | :--- |
-${[
-        addedEntries(js.added),
-        changedEntries(js.changed),
-        unchangedEntries(js.unchanged),
-        removedEntries(js.removed),
-    ]
-        .filter((item) => item)
-        .join("\n")}
-
-</details>
-
-<details>
-<summary>
-CSS shared by all pages <code>${formatBytes(totalCSSChunksSize)}</code>
-</summary>
-<br>
-
-${getFilesSummary(css)}
-|| Chunk file name | Size |
-| :---: | :--- | :--- |
-${[
-        addedEntries(css.added),
-        changedEntries(css.changed),
-        unchangedEntries(css.unchanged),
-        removedEntries(css.removed),
-    ]
-        .filter((item) => item)
-        .join("\n")}
-
-</details>
-
-<!-- GH NBA -->`;
-};
 
 var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
 
@@ -1086,16 +776,16 @@ function version(uuid) {
 }
 
 var esmBrowser = /*#__PURE__*/Object.freeze({
-    __proto__: null,
-    NIL: nil,
-    parse: parse$1,
-    stringify: stringify$1,
-    v1: v1,
-    v3: v3$1,
-    v4: v4,
-    v5: v5$1,
-    validate: validate,
-    version: version
+	__proto__: null,
+	NIL: nil,
+	parse: parse$1,
+	stringify: stringify$1,
+	v1: v1,
+	v3: v3$1,
+	v4: v4,
+	v5: v5$1,
+	validate: validate,
+	version: version
 });
 
 var require$$2 = /*@__PURE__*/getAugmentedNamespace(esmBrowser);
@@ -16712,7 +16402,7 @@ function requireFetch () {
 	} = requireResponse();
 	const { Headers } = requireHeaders();
 	const { Request, makeRequest } = requireRequest();
-	const zlib$1 = zlib;
+	const zlib = require$$3$1;
 	const {
 	  bytesMatch,
 	  makePolicyContainer,
@@ -18660,18 +18350,18 @@ function requireFetch () {
 	            for (const coding of codings) {
 	              // https://www.rfc-editor.org/rfc/rfc9112.html#section-7.2
 	              if (coding === 'x-gzip' || coding === 'gzip') {
-	                decoders.push(zlib$1.createGunzip({
+	                decoders.push(zlib.createGunzip({
 	                  // Be less strict when decoding compressed responses, since sometimes
 	                  // servers send slightly invalid responses that are still accepted
 	                  // by common browsers.
 	                  // Always using Z_SYNC_FLUSH is what cURL does.
-	                  flush: zlib$1.constants.Z_SYNC_FLUSH,
-	                  finishFlush: zlib$1.constants.Z_SYNC_FLUSH
+	                  flush: zlib.constants.Z_SYNC_FLUSH,
+	                  finishFlush: zlib.constants.Z_SYNC_FLUSH
 	                }));
 	              } else if (coding === 'deflate') {
-	                decoders.push(zlib$1.createInflate());
+	                decoders.push(zlib.createInflate());
 	              } else if (coding === 'br') {
-	                decoders.push(zlib$1.createBrotliDecompress());
+	                decoders.push(zlib.createBrotliDecompress());
 	              } else {
 	                decoders.length = 0;
 	                break
@@ -25500,6 +25190,316 @@ function requireCore () {
 
 var coreExports = requireCore();
 
+let prefix = ".next";
+let budget = 200 * 1024;
+const setPrefix = (newPrefix) => (prefix = newPrefix);
+const getPrefix = () => prefix;
+const setBudget = (newBudget) => (budget = newBudget * 1024);
+const getBudget = () => budget;
+
+const getFileSizes = (pathToFile) => {
+    const fullPath = path.join(process.cwd(), getPrefix(), pathToFile);
+    const bytes = fs$1.readFileSync(fullPath);
+    const zippedBytes = require$$3$1.gzipSync(bytes);
+    return { [pathToFile]: zippedBytes.byteLength };
+};
+
+const getPageSizes = (pages) => Object.entries(pages).reduce((acc, [page, files]) => {
+    const size = files
+        .map((filename) => getFileSizes(filename)[filename])
+        .reduce((s, b) => s + b, 0);
+    return { ...acc, [page.replace("/page", "") || "/"]: size };
+}, {});
+
+const hasLayoutEntry = (manifest) => "/layout" in manifest.pages;
+const processBuildManifest = (manifest) => {
+    if (!hasLayoutEntry(manifest)) {
+        throw new Error("No layout entry in build manifest!");
+    }
+    const { ["/layout"]: layoutFiles, ...pages } = manifest.pages;
+    const layoutFilesSize = layoutFiles.reduce((files, filename) => ({ ...files, ...getFileSizes(filename) }), {});
+    const jsFiles = {};
+    const cssFiles = {};
+    let indexLayoutSize = 0;
+    for (const [filename, size] of Object.entries(layoutFilesSize)) {
+        if (filename.includes("static/chunks/app/layout")) {
+            indexLayoutSize = size;
+        }
+        else if (filename.endsWith(".css")) {
+            cssFiles[filename] = size;
+        }
+        else if (filename.endsWith(".js")) {
+            jsFiles[filename] = size;
+        }
+    }
+    return {
+        indexLayoutSize,
+        layout: {
+            cssFiles,
+            jsFiles,
+        },
+        pages,
+    };
+};
+
+const getAnalysis = (manifest) => {
+    const { layout, pages } = processBuildManifest(manifest);
+    const fileToExclude = Object.keys(layout.jsFiles);
+    // Don't include the common files in the page sizes
+    const pagesWithExcludedFiles = Object.entries(pages).reduce((acc, [page, files]) => ({
+        ...acc,
+        [page]: files.filter((file) => !fileToExclude.includes(file)),
+    }), {});
+    const pageSizes = getPageSizes(pagesWithExcludedFiles);
+    return {
+        chunks: {
+            css: layout.cssFiles,
+            js: layout.jsFiles,
+        },
+        pages: pageSizes,
+    };
+};
+
+const getStats = (base, current) => {
+    const result = {
+        added: {},
+        changed: {},
+        removed: {},
+        unchanged: {},
+    };
+    // Compare
+    for (const key of Object.keys(base)) {
+        const baseSize = base[key] || 0;
+        const currentSize = current[key] || 0;
+        const delta = currentSize - baseSize;
+        if (delta > 0) {
+            result.changed[key] = { delta, size: currentSize };
+        }
+        else if (delta < 0) {
+            result.changed[key] = { delta, size: currentSize };
+        }
+        else {
+            result.unchanged[key] = { delta, size: currentSize };
+        }
+    }
+    // Find added
+    for (const key of Object.keys(current)) {
+        if (!base[key]) {
+            const currentSize = current[key];
+            result.added[key] = { delta: currentSize, size: currentSize };
+        }
+    }
+    // Find removed
+    for (const key of Object.keys(base)) {
+        if (!current[key]) {
+            const baseSize = base[key];
+            result.removed[key] = { delta: -baseSize, size: baseSize };
+            // Remove the entry from "changed" if it's also marked as "removed"
+            delete result.changed[key];
+        }
+    }
+    return result;
+};
+const getComparison = (baseReport, currentReport) => ({
+    chunks: {
+        css: getStats(baseReport.chunks.css, currentReport.chunks.css),
+        js: getStats(baseReport.chunks.js, currentReport.chunks.js),
+    },
+    pages: getStats(baseReport.pages, currentReport.pages),
+});
+
+const exportToFile = (dirPath, fileName) => (data) => {
+    const root = process.env.GITHUB_WORKSPACE || process.cwd();
+    const outDir = path.join(root, dirPath);
+    const outFile = path.join(outDir, fileName);
+    try {
+        fs$1.mkdirSync(outDir);
+    }
+    catch (e) {
+        // Ignore (dir exists)
+    }
+    fs$1.writeFileSync(outFile, data);
+};
+
+const loadJSON = (filePath) => {
+    const root = process.env.GITHUB_WORKSPACE || process.cwd();
+    const data = fs$1.readFileSync(new URL(path.join(root, filePath), import.meta.url), "utf-8");
+    return JSON.parse(data);
+};
+
+const kb = 1024;
+const sizes = ["B", "kB", "mB", "gB", "tB"];
+const formatBytes = (bytes, signed = false) => {
+    const sign = signed ? (bytes < 0 ? "-" : "+") : "";
+    if (bytes === 0)
+        return `${sign}0B`;
+    const i = Math.floor(Math.log(Math.abs(bytes)) / Math.log(kb));
+    return `${sign}${parseFloat(Math.abs(bytes / Math.pow(kb, i)).toFixed(2))}${sizes[i]}`;
+};
+
+const getDelta = ({ added, changed, removed }) => Object.values({
+    ...added,
+    ...changed,
+    ...removed,
+}).reduce((total, { delta }) => total + delta, 0);
+const getBaseSize = ({ changed, removed, unchanged }) => {
+    const sizeWithChangeDelta = Object.values({
+        ...changed,
+        ...unchanged,
+        ...removed,
+    }).reduce((total, { size }) => total + size, 0);
+    const changeDelta = Object.values(changed).reduce((total, { delta }) => total + delta, 0);
+    return sizeWithChangeDelta - changeDelta;
+};
+const getDeltaSummary = (comparison) => {
+    const pagesSize = getBaseSize(comparison.pages);
+    const jsSize = getBaseSize(comparison.chunks.js);
+    const cssSize = getBaseSize(comparison.chunks.css);
+    const pagesDelta = getDelta(comparison.pages);
+    const jsDelta = getDelta(comparison.chunks.js);
+    const cssDelta = getDelta(comparison.chunks.css);
+    const totalDelta = pagesDelta + jsDelta + cssDelta;
+    const totalBaseSize = pagesSize + jsSize + cssSize;
+    const sign = totalDelta < 0 ? "-" : "+";
+    const percent = totalDelta && totalBaseSize
+        ? totalDelta / totalBaseSize
+        : totalBaseSize
+            ? 0
+            : 1;
+    const sizeChangeInPct = totalDelta
+        ? ` (${sign}${Math.abs(percent * 100).toFixed(2)}%)`
+        : "";
+    const sizeStats = `${formatBytes(totalDelta, true)}${sizeChangeInPct}`;
+    if (totalDelta === 0)
+        return "🤔 Total bundle size unchanged";
+    return totalDelta < 0
+        ? `🎉 Total bundle size decreased \`${sizeStats}\``
+        : `🏋️ Total bundle size increased \`${sizeStats}\``;
+};
+
+const getFilesSummary = (changes, type = "files") => {
+    const icon = type === "files" ? "📦" : "📄";
+    const addedCount = Object.keys(changes.added).length;
+    const changedCount = Object.keys(changes.changed).length;
+    const removedCount = Object.keys(changes.removed).length;
+    return `${icon} \`${addedCount}\` new, \`${changedCount}\` changed and \`${removedCount}\` deleted ${type}`;
+};
+
+const renderRow = (args) => `| ${args.join(" | ")} |`;
+const getTableRows = (data, cb) => Object.entries(data)
+    .sort((a, b) => a[0].localeCompare(b[0]))
+    .map(([page, { delta, size }]) => cb(page, size, delta))
+    .map(renderRow)
+    .join("\n");
+
+const getSum = (obj, prop) => Object.values(obj).reduce((total, value) => total + +value[prop], 0);
+
+const getPercentage = (size) => ((size / getBudget()) * 100).toFixed(2);
+const getDetails = (size, delta, totalChunksSize) => {
+    if (!totalChunksSize)
+        return ["", ""];
+    const totalSize = size + totalChunksSize;
+    const sign = delta > 0 ? "+" : "";
+    const percentageChange = delta ? ` (${sign}${getPercentage(delta)}%)` : "";
+    return [
+        formatBytes(totalSize),
+        `${getPercentage(size + totalSize)}% ${percentageChange}`,
+    ];
+};
+const addedEntries = (entries, totalChunksSize) => getTableRows(entries, (title, size) => [
+    "+",
+    title,
+    `+${formatBytes(size)}`,
+    ...getDetails(size, 0, totalChunksSize),
+]);
+const changedEntries = (entries, totalChunksSize) => getTableRows(entries, (title, size, delta) => [
+    "±",
+    title,
+    `${formatBytes(size)} (${formatBytes(delta, true)})`,
+    ...getDetails(size, delta, totalChunksSize),
+]);
+const unchangedEntries = (entries, totalChunksSize) => getTableRows(entries, (title, size) => [
+    "",
+    title,
+    formatBytes(size),
+    ...getDetails(size, 0, totalChunksSize),
+]);
+const removedEntries = (entries) => getTableRows(entries, (title, size) => [
+    "−",
+    title,
+    `-${formatBytes(size)}`,
+]);
+const renderReport = (comparison) => {
+    const { chunks, pages } = comparison;
+    const { css, js } = chunks;
+    const totalJSChunksSize = getSum({
+        ...js.added,
+        ...js.changed,
+        ...js.unchanged,
+    }, "size");
+    const totalCSSChunksSize = getSum({
+        ...css.added,
+        ...css.changed,
+        ...css.unchanged,
+    }, "size");
+    return `# Bundle Size Report
+
+${[getDeltaSummary(comparison), getFilesSummary(pages, "pages")].join("\\\n")}
+
+|| Route | Size | Total size | % of \`${formatBytes(getBudget())}\` budget |
+| :---: | :--- | :--- | ---: | :--- |
+${[
+        addedEntries(pages.added, totalJSChunksSize),
+        changedEntries(pages.changed, totalJSChunksSize),
+        unchangedEntries(pages.unchanged, totalJSChunksSize),
+        removedEntries(pages.removed),
+    ]
+        .filter((item) => item)
+        .join("\n")}
+
+<details>
+<summary>
+  JS shared by all pages <code>${formatBytes(totalJSChunksSize)}</code>
+</summary>
+<br>
+
+${getFilesSummary(js)}
+|| Chunk file name | Size |
+| :---: | :--- | :--- |
+${[
+        addedEntries(js.added),
+        changedEntries(js.changed),
+        unchangedEntries(js.unchanged),
+        removedEntries(js.removed),
+    ]
+        .filter((item) => item)
+        .join("\n")}
+
+</details>
+
+<details>
+<summary>
+CSS shared by all pages <code>${formatBytes(totalCSSChunksSize)}</code>
+</summary>
+<br>
+
+${getFilesSummary(css)}
+|| Chunk file name | Size |
+| :---: | :--- | :--- |
+${[
+        addedEntries(css.added),
+        changedEntries(css.changed),
+        unchangedEntries(css.unchanged),
+        removedEntries(css.removed),
+    ]
+        .filter((item) => item)
+        .join("\n")}
+
+</details>
+
+<!-- GH NBA -->`;
+};
+
 let baseReport;
 let appBuildManifest;
 try {
@@ -25517,8 +25517,8 @@ try {
     }
     catch (error) {
         baseReport = {
+            chunks: { css: {}, js: {} },
             pages: {},
-            chunks: { js: {}, css: {} },
         };
     }
     try {
@@ -25534,9 +25534,6 @@ try {
     const currentReport = getAnalysis(appBuildManifest);
     const comparison = getComparison(baseReport, currentReport);
     const comparisonReport = renderReport(comparison);
-    console.log("CCCC", comparisonReport);
-    console.log("EXPORT JSON", exportReportPath);
-    console.log("EXPORT TXT", exportPath);
     exportToFile(exportReportPath, "report.json")(JSON.stringify(currentReport));
     exportToFile(exportPath, "report.txt")(comparisonReport);
 }

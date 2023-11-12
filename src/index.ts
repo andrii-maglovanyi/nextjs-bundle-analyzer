@@ -1,11 +1,12 @@
+import * as core from "@actions/core";
+import path from "path";
+
 import { setBudget, setPrefix } from "./config.js";
 import { getAnalysis } from "./steps/get-analysis.js";
 import { getComparison } from "./steps/get-comparison.js";
 import { exportToFile } from "./utils/export-to-file.js";
 import { loadJSON } from "./utils/load-json.js";
 import { renderReport } from "./utils/render-report.js";
-import * as core from "@actions/core";
-import path from "path";
 
 let baseReport;
 let appBuildManifest;
@@ -27,8 +28,8 @@ try {
     baseReport = loadJSON(importReportPath);
   } catch (error) {
     baseReport = {
+      chunks: { css: {}, js: {} },
       pages: {},
-      chunks: { js: {}, css: {} },
     };
   }
 
@@ -45,10 +46,6 @@ try {
   const currentReport = getAnalysis(appBuildManifest);
   const comparison = getComparison(baseReport, currentReport);
   const comparisonReport = renderReport(comparison);
-
-  console.log("CCCC", comparisonReport);
-  console.log("EXPORT JSON", exportReportPath);
-  console.log("EXPORT TXT", exportPath);
 
   exportToFile(exportReportPath, "report.json")(JSON.stringify(currentReport));
   exportToFile(exportPath, "report.txt")(comparisonReport);

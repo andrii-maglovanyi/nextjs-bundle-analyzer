@@ -5,11 +5,11 @@ describe("get-sum", () => {
     expect(
       getSum(
         {
-          "/": { size: 100, delta: 0 },
-          "/about": { size: 200, delta: 20 },
+          "/": { delta: 0, size: 100 },
+          "/about": { delta: 20, size: 200 },
         },
-        "size"
-      )
+        "size",
+      ),
     ).toEqual(300);
   });
 });

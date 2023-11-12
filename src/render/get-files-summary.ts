@@ -2,7 +2,7 @@ import { type ComparisonResult } from "../steps/get-comparison.js";
 
 export const getFilesSummary = (
   changes: ComparisonResult,
-  type: "files" | "pages" = "files"
+  type: "files" | "pages" = "files",
 ) => {
   const icon = type === "files" ? "📦" : "📄";
 
