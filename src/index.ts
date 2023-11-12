@@ -5,55 +5,55 @@ import { exportToFile } from "./utils/export-to-file.js";
 import { loadJSON } from "./utils/load-json.js";
 import { renderReport } from "./utils/render-report.js";
 import * as core from "@actions/core";
+import path from "path";
 
 let baseReport;
 let appBuildManifest;
 
-const defaultBranch = core.getInput("default-branch") || "main";
-const prefix = core.getInput("prefix") || ".next";
-const budget = +core.getInput("budget") || 200;
-
-console.log("SET BUDEGT", budget);
-console.log(`The event payload: ${core.summary}`);
-
-setPrefix(prefix);
-setBudget(budget);
-
-const importBaseReportPath = `${prefix}/analyze/${defaultBranch}/report.json`;
-const appBuildManifestPath = `${prefix}/app-build-manifest.json`;
-
-const exportPath = `${prefix}/analyze`;
-
 try {
-  baseReport = loadJSON(importBaseReportPath);
+  const branch = core.getInput("default-branch") || "main";
+  const prefix = core.getInput("prefix") || ".next";
+  const budget = +core.getInput("budget") || 200;
+
+  console.log("SET BUDEGT", budget);
+  console.log(`The event payload: ${core.summary}`);
+  console.log(JSON.stringify(process.env, null, 2));
+
+  setPrefix(prefix);
+  setBudget(budget);
+
+  const importReportPath = path.join(prefix, "analyze", branch, "report.json");
+  const appBuildManifestPath = path.join(prefix, "app-build-manifest.json");
+  const exportPath = path.join(prefix, "analyze");
+  const exportReportPath = path.join(exportPath, branch);
+
+  try {
+    baseReport = loadJSON(importReportPath);
+  } catch (error) {
+    baseReport = {
+      pages: {},
+      chunks: { js: {}, css: {} },
+    };
+  }
+
+  try {
+    appBuildManifest = loadJSON(appBuildManifestPath);
+  } catch (error) {
+    appBuildManifest = {
+      pages: {
+        ["/layout"]: [],
+      },
+    };
+  }
+
+  const currentReport = getAnalysis(appBuildManifest);
+  const comparison = getComparison(baseReport, currentReport);
+  const comparisonReport = renderReport(comparison);
+
+  exportToFile(exportReportPath, "report.json")(JSON.stringify(currentReport));
+  exportToFile(exportPath, "report.txt")(comparisonReport);
 } catch (error) {
-  baseReport = {
-    pages: {},
-    chunks: { js: {}, css: {} },
-  };
+  if (error instanceof Error) {
+    core.setFailed(error.message);
+  }
 }
-
-try {
-  appBuildManifest = loadJSON(appBuildManifestPath);
-} catch (error) {
-  appBuildManifest = {
-    pages: {
-      ["/layout"]: [],
-    },
-  };
-}
-
-const currentReport = getAnalysis(appBuildManifest);
-
-exportToFile(
-  exportPath,
-  `${defaultBranch}/report.json`
-)(JSON.stringify(currentReport));
-
-const comparison = getComparison(baseReport, currentReport);
-
-const comparisonReport = renderReport(comparison);
-
-console.log(comparisonReport);
-
-exportToFile(exportPath, "report.txt")(comparisonReport);

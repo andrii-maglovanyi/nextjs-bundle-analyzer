@@ -25,12 +25,12 @@ import require$$1$3 from 'url';
 import require$$6 from 'string_decoder';
 import require$$0$8 from 'diagnostics_channel';
 
-let prefix$1 = ".next";
-let budget$2 = 200 * 1024;
-const setPrefix = (newPrefix) => (prefix$1 = newPrefix);
-const getPrefix = () => prefix$1;
-const setBudget = (newBudget) => (budget$2 = newBudget * 1024);
-const getBudget = () => budget$2;
+let prefix = ".next";
+let budget$1 = 200 * 1024;
+const setPrefix = (newPrefix) => (prefix = newPrefix);
+const getPrefix = () => prefix;
+const setBudget = (newBudget) => (budget$1 = newBudget * 1024);
+const getBudget = () => budget$1;
 
 const getFileSizes = (pathToFile) => {
     const fullPath = path.join(process.cwd(), getPrefix(), pathToFile);
@@ -229,8 +229,8 @@ const getTableRows = (data, cb) => Object.entries(data)
 
 const getSum = (obj, prop) => Object.values(obj).reduce((total, value) => total + +value[prop], 0);
 
-const budget$1 = getBudget();
-const getPercentage = (size) => ((size / budget$1) * 100).toFixed(2);
+const budget = getBudget();
+const getPercentage = (size) => ((size / budget) * 100).toFixed(2);
 const getDetails = (size, delta, totalChunksSize) => {
     if (!totalChunksSize)
         return ["", ""];
@@ -282,7 +282,7 @@ const renderReport = (comparison) => {
 
 ${[getDeltaSummary(comparison), getFilesSummary(pages, "pages")].join("\\\n")}
 
-|| Route | Size | Total size | % of \`${formatBytes(budget$1)}\` budget |
+|| Route | Size | Total size | % of \`${formatBytes(budget)}\` budget |
 | :---: | :--- | :--- | ---: | :--- |
 ${[
         addedEntries(pages.added, totalJSChunksSize),
@@ -25503,39 +25503,47 @@ var coreExports = requireCore();
 
 let baseReport;
 let appBuildManifest;
-const defaultBranch = coreExports.getInput("default-branch") || "main";
-const prefix = coreExports.getInput("prefix") || ".next";
-const budget = +coreExports.getInput("budget") || 200;
-console.log("SET BUDEGT", budget);
-console.log(`The event payload: ${coreExports.summary}`);
-setPrefix(prefix);
-setBudget(budget);
-const importBaseReportPath = `${prefix}/analyze/${defaultBranch}/report.json`;
-const appBuildManifestPath = `${prefix}/app-build-manifest.json`;
-const exportPath = `${prefix}/analyze`;
 try {
-    baseReport = loadJSON(importBaseReportPath);
+    const branch = coreExports.getInput("default-branch") || "main";
+    const prefix = coreExports.getInput("prefix") || ".next";
+    const budget = +coreExports.getInput("budget") || 200;
+    console.log("SET BUDEGT", budget);
+    console.log(`The event payload: ${coreExports.summary}`);
+    console.log(JSON.stringify(process.env, null, 2));
+    setPrefix(prefix);
+    setBudget(budget);
+    const importReportPath = path.join(prefix, "analyze", branch, "report.json");
+    const appBuildManifestPath = path.join(prefix, "app-build-manifest.json");
+    const exportPath = path.join(prefix, "analyze");
+    const exportReportPath = path.join(exportPath, branch);
+    try {
+        baseReport = loadJSON(importReportPath);
+    }
+    catch (error) {
+        baseReport = {
+            pages: {},
+            chunks: { js: {}, css: {} },
+        };
+    }
+    try {
+        appBuildManifest = loadJSON(appBuildManifestPath);
+    }
+    catch (error) {
+        appBuildManifest = {
+            pages: {
+                ["/layout"]: [],
+            },
+        };
+    }
+    const currentReport = getAnalysis(appBuildManifest);
+    const comparison = getComparison(baseReport, currentReport);
+    const comparisonReport = renderReport(comparison);
+    exportToFile(exportReportPath, "report.json")(JSON.stringify(currentReport));
+    exportToFile(exportPath, "report.txt")(comparisonReport);
 }
 catch (error) {
-    baseReport = {
-        pages: {},
-        chunks: { js: {}, css: {} },
-    };
+    if (error instanceof Error) {
+        coreExports.setFailed(error.message);
+    }
 }
-try {
-    appBuildManifest = loadJSON(appBuildManifestPath);
-}
-catch (error) {
-    appBuildManifest = {
-        pages: {
-            ["/layout"]: [],
-        },
-    };
-}
-const currentReport = getAnalysis(appBuildManifest);
-exportToFile(exportPath, `${defaultBranch}/report.json`)(JSON.stringify(currentReport));
-const comparison = getComparison(baseReport, currentReport);
-const comparisonReport = renderReport(comparison);
-console.log(comparisonReport);
-exportToFile(exportPath, "report.txt")(comparisonReport);
 //# sourceMappingURL=index.js.map
