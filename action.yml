@@ -15,7 +15,7 @@ inputs:
     default: ".next"
   budget:
     description: "Bundle size budget"
-    default: 210
+    default: 200
 runs:
   using: "composite"
   steps:
@@ -30,6 +30,12 @@ runs:
 
     - name: Generate analysis report
       run: echo ${{ inputs.budget }} && mkdir -p ${{ inputs.prefix }}/analyze/${{ inputs.default-branch }} && node ${{ github.action_path }}/dist/index.js
+      env:
+        INPUT_WORKFLOW-ID: ${{ inputs.workflow-id }}
+        INPUT_GITHUB-TOKEN: ${{ inputs.github-token }}
+        INPUT_DEFAULT-BRANCH: ${{ inputs.default-branch }}
+        INPUT_PREFIX: ${{ inputs.prefix }}
+        INPUT_BUDGET: ${{ inputs.budget }}
       shell: bash
 
     - name: Upload report
