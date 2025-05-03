@@ -1,0 +1,13 @@
+{
+  "chunks": {
+    "js": {
+      "/static/chunks/js0.js": 148,
+      "/static/chunks/js1.js": 48
+    },
+    "css": {
+      "/static/css/css0.css": 42,
+      "/static/css/css1.css": 11
+    }
+  },
+  "pages": { "/": 98, "/_found": 100, "/about": 37 }
+}

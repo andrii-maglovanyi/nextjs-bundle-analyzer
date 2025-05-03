@@ -1,0 +1,85 @@
+name: "Next.js bundle analyzer"
+description: "Evaluate the size of the code bundle and assess the changes in its size."
+inputs:
+  workflow-id:
+    description: "Workflow ID containing this step"
+    required: true
+  github-token:
+    description: "Token for GitHub operations"
+    required: true
+  default-branch:
+    description: "Default branch of the repo (main, master, etc)"
+    default: main
+  dist-folder:
+    description: "Next.js dist directory"
+    default: ".next"
+  budget:
+    description: "Bundle size budget in bytes"
+    default: 200
+runs:
+  using: "composite"
+  steps:
+    - name: Download report from default branch
+      uses: dawidd6/action-download-artifact@v9
+      if: success() && github.event.number
+      with:
+        workflow: ${{ inputs.workflow-id }}
+        if_no_artifact_found: ignore
+        branch: ${{ inputs.default-branch }}
+        path: ${{ inputs.dist-folder }}/analyze
+
+    - name: Generate analysis report
+      run: echo ${{ inputs.budget }} && mkdir -p ${{ inputs.dist-folder }}/analyze/${{ inputs.default-branch }} && node ${{ github.action_path }}/dist/index.js
+      env:
+        INPUT_WORKFLOW-ID: ${{ inputs.workflow-id }}
+        INPUT_GITHUB-TOKEN: ${{ inputs.github-token }}
+        INPUT_DEFAULT-BRANCH: ${{ inputs.default-branch }}
+        INPUT_DIST-FOLDER: ${{ inputs.dist-folder }}
+        INPUT_BUDGET: ${{ inputs.budget }}
+      shell: bash
+
+    - name: Upload report
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ inputs.default-branch }}
+        path: ${{ inputs.dist-folder }}/analyze/${{ inputs.default-branch }}/report.json
+
+    # Find and replace on output text for displaying properly. Save this to an Action variable.
+    - name: Get comment body
+      id: get-comment-body
+      if: success() && github.event.number
+      run: |
+        body=$(cat ${{ inputs.dist-folder }}/analyze/report.txt)
+        echo "body<<EOF" >> $GITHUB_OUTPUT
+        echo "$body" >> $GITHUB_OUTPUT
+        echo "EOF" >> $GITHUB_OUTPUT
+      shell: bash
+
+    # Looks for a comment with <!-- GH NBA --> in its body.
+    - name: Find Comment
+      uses: peter-evans/find-comment@v3
+      if: success() && github.event.number
+      id: fc
+      with:
+        issue-number: ${{ github.event.number }}
+        body-includes: "<!-- GH NBA -->"
+
+    # If no comment exists, make one with the previously saved Action variable
+    - name: Create Comment
+      uses: peter-evans/create-or-update-comment@v4
+      if: success() && github.event.number && steps.fc.outputs.comment-id == 0
+      with:
+        token: ${{ inputs.github-token }}
+        issue-number: ${{ github.event.number }}
+        body: ${{ steps.get-comment-body.outputs.body }}
+
+    # Otherwise, if a comment already exists, replace its body
+    - name: Update Comment
+      uses: peter-evans/create-or-update-comment@v4
+      if: success() && github.event.number && steps.fc.outputs.comment-id != 0
+      with:
+        token: ${{ inputs.github-token }}
+        issue-number: ${{ github.event.number }}
+        body: ${{ steps.get-comment-body.outputs.body }}
+        comment-id: ${{ steps.fc.outputs.comment-id }}
+        edit-mode: replace

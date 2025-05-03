@@ -1,0 +1,12 @@
+{
+  "chunks": {
+    "js": {
+      "/static/chunks/js1.js": 49,
+      "/static/chunks/js2.js": 51
+    },
+    "css": {
+      "/static/css/css1.css": 42
+    }
+  },
+  "pages": { "/": 98, "/_not-found": 52, "/about": 48 }
+}
