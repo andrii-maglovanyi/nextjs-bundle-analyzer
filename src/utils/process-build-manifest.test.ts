@@ -10,13 +10,13 @@ describe("processBuildManifest", () => {
 
   test("should return the correct result", () => {
     expect(processBuildManifest(manifest)).toEqual({
-      indexLayoutSize: 52,
+      indexLayoutSize: 54,
       layout: {
         cssFiles: {
           "/static/css/css1.css": 42,
         },
         jsFiles: {
-          "/static/chunks/js1.js": 49,
+          "/static/chunks/js1.js": 50,
           "/static/chunks/js2.js": 51,
         },
       },
