@@ -86,6 +86,9 @@ export const renderReport = (comparison: ComparisonReport) => {
     "size",
   );
 
+  const hasJs = Object.values(js).some((value) => Boolean(value));
+  const hasCss = Object.values(css).some((value) => Boolean(value));
+
   return `# Bundle Size Report
 
 ${[getDeltaSummary(comparison), getFilesSummary(pages, "pages")].join("\\\n")}
@@ -101,7 +104,9 @@ ${[
   .filter((item) => item)
   .join("\n")}
 
-<details>
+${
+  hasJs
+    ? `<details>
 <summary>
   JS shared by all pages <code>${formatBytes(totalJSChunksSize)}</code>
 </summary>
@@ -119,9 +124,13 @@ ${[
   .filter((item) => item)
   .join("\n")}
 
-</details>
+</details>`
+    : ""
+}
 
-<details>
+${
+  hasCss
+    ? `<details>
 <summary>
 CSS shared by all pages <code>${formatBytes(totalCSSChunksSize)}</code>
 </summary>
@@ -139,7 +148,9 @@ ${[
   .filter((item) => item)
   .join("\n")}
 
-</details>
+</details>`
+    : ""
+}
 
 <!-- GH NBA -->`;
 };
