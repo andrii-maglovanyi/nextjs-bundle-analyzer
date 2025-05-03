@@ -86,8 +86,13 @@ export const renderReport = (comparison: ComparisonReport) => {
     "size",
   );
 
-  const hasJs = Object.values(js).some((value) => Boolean(value));
-  const hasCss = Object.values(css).some((value) => Boolean(value));
+  const hasJs = Object.values(js).some(
+    (value) => Object.keys(value).length > 0 && value.constructor === Object,
+  );
+
+  const hasCss = Object.values(css).some(
+    (value) => Object.keys(value).length > 0 && value.constructor === Object,
+  );
 
   return `# Bundle Size Report
 
