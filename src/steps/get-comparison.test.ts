@@ -16,14 +16,14 @@ describe("getComparison", () => {
         },
         js: {
           added: { "/static/chunks/js2.js": { delta: 51, size: 51 } },
-          changed: { "/static/chunks/js1.js": { delta: 1, size: 49 } },
+          changed: { "/static/chunks/js1.js": { delta: 2, size: 50 } },
           removed: { "/static/chunks/js0.js": { delta: -148, size: 148 } },
           unchanged: {},
         },
       },
       pages: {
-        added: { "/_not-found": { delta: 52, size: 52 } },
-        changed: { "/about": { delta: 11, size: 48 } },
+        added: { "/_not-found": { delta: 53, size: 53 } },
+        changed: { "/about": { delta: 13, size: 50 } },
         removed: { "/_found": { delta: -100, size: 100 } },
         unchanged: { "/": { delta: 0, size: 98 } },
       },

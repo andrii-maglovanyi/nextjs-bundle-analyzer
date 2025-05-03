@@ -7,5 +7,5 @@ export const getPageSizes = (pages: Pages) =>
       .map((filename) => getFileSizes(filename)[filename])
       .reduce((s, b) => s + b, 0);
 
-    return { ...acc, [page.replace("/page", "") || "/"]: size };
+    return { ...acc, [page.replace(/\/(page|route)/, "") || "/"]: size };
   }, {});
