@@ -6,8 +6,9 @@
     },
     "css": {
       "/static/css/css0.css": 42,
-      "/static/css/css1.css": 11
+      "/static/css/css1.css": 11,
+      "/static/css/css2.css": 12
     }
   },
-  "pages": { "/": 98, "/_found": 100, "/about": 37 }
+  "pages": { "/": 99, "/_found": 100, "/about": 37 }
 }

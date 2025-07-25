@@ -10,16 +10,36 @@ describe("processBuildManifest", () => {
 
   test("should return the correct result", () => {
     expect(processBuildManifest(manifest)).toEqual({
-      indexLayoutSize: 54,
-      layout: {
-        cssFiles: {
-          "/static/css/css1.css": 42,
+      layouts: {
+        "/[locale]/layout": {
+          cssFiles: {
+            "/static/css/css2.css": 44,
+          },
+          jsFiles: {
+            "/static/chunks/js2.js": 52,
+            "/static/chunks/js4.js": 69,
+          },
+          layoutSize: 64,
         },
-        jsFiles: {
-          "/static/chunks/js1.js": 50,
-          "/static/chunks/js2.js": 51,
+        "/admin/layout": {
+          cssFiles: {},
+          jsFiles: {
+            "/static/chunks/js4.js": 69,
+          },
+          layoutSize: 60,
+        },
+        "/layout": {
+          cssFiles: {
+            "/static/css/css1.css": 42,
+          },
+          jsFiles: {
+            "/static/chunks/js1.js": 51,
+            "/static/chunks/js2.js": 52,
+          },
+          layoutSize: 54,
         },
       },
+
       pages,
     });
   });
@@ -30,7 +50,7 @@ describe("processBuildManifest", () => {
     };
 
     expect(() => processBuildManifest(manifestWithoutLayout)).toThrow(
-      "No layout entry in build manifest!",
+      "No layout entries in build manifest!",
     );
   });
 });

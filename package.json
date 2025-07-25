@@ -1,6 +1,6 @@
 {
   "name": "nextjs-bundle-analyzer",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Analyze the size and composition of bundles generated during the build process of an application",
   "main": "dist/index.js",
   "exports": {

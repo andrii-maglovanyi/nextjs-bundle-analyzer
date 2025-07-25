@@ -1,12 +1,14 @@
 {
   "chunks": {
     "js": {
-      "/static/chunks/js1.js": 50,
-      "/static/chunks/js2.js": 51
+      "/static/chunks/js1.js": 51,
+      "/static/chunks/js2.js": 52,
+      "/static/chunks/js4.js": 69
     },
     "css": {
-      "/static/css/css1.css": 42
+      "/static/css/css1.css": 42,
+      "/static/css/css2.css": 44
     }
   },
-  "pages": { "/": 98, "/_not-found": 53, "/about": 50 }
+  "pages": { "/": 99, "/_not-found": 54, "/about": 50, "/admin": 101 }
 }
