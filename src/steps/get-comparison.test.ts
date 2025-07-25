@@ -19,22 +19,22 @@ describe("getComparison", () => {
         },
         js: {
           added: {
-            "/static/chunks/js2.js": { delta: 51, size: 51 },
+            "/static/chunks/js2.js": { delta: 52, size: 52 },
             "/static/chunks/js4.js": { delta: 69, size: 69 },
           },
-          changed: { "/static/chunks/js1.js": { delta: 2, size: 50 } },
+          changed: { "/static/chunks/js1.js": { delta: 3, size: 51 } },
           removed: { "/static/chunks/js0.js": { delta: -148, size: 148 } },
           unchanged: {},
         },
       },
       pages: {
         added: {
-          "/_not-found": { delta: 53, size: 53 },
+          "/_not-found": { delta: 54, size: 54 },
           "/admin": { delta: 101, size: 101 },
         },
         changed: { "/about": { delta: 13, size: 50 } },
         removed: { "/_found": { delta: -100, size: 100 } },
-        unchanged: { "/": { delta: 0, size: 98 } },
+        unchanged: { "/": { delta: 0, size: 99 } },
       },
     });
   });

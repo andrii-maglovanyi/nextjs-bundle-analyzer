@@ -10,10 +10,10 @@ describe("getPageSizes", () => {
   test("should return the size of each page", () => {
     const sizes = getPageSizes(pages);
     expect(sizes).toEqual({
-      "/": 199,
-      "/_not-found": 154,
-      "/about": 151,
-      "/admin": 271,
+      "/": 202,
+      "/_not-found": 157,
+      "/about": 153,
+      "/admin": 273,
     });
   });
 

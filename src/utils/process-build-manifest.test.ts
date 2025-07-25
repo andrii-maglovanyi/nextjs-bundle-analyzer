@@ -16,7 +16,7 @@ describe("processBuildManifest", () => {
             "/static/css/css2.css": 44,
           },
           jsFiles: {
-            "/static/chunks/js2.js": 51,
+            "/static/chunks/js2.js": 52,
             "/static/chunks/js4.js": 69,
           },
           layoutSize: 64,
@@ -33,8 +33,8 @@ describe("processBuildManifest", () => {
             "/static/css/css1.css": 42,
           },
           jsFiles: {
-            "/static/chunks/js1.js": 50,
-            "/static/chunks/js2.js": 51,
+            "/static/chunks/js1.js": 51,
+            "/static/chunks/js2.js": 52,
           },
           layoutSize: 54,
         },
