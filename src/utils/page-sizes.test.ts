@@ -9,7 +9,12 @@ describe("getPageSizes", () => {
 
   test("should return the size of each page", () => {
     const sizes = getPageSizes(pages);
-    expect(sizes).toEqual({ "/": 199, "/_not-found": 154, "/about": 151 });
+    expect(sizes).toEqual({
+      "/": 199,
+      "/_not-found": 154,
+      "/about": 151,
+      "/admin": 271,
+    });
   });
 
   test("should handle empty pages object", () => {

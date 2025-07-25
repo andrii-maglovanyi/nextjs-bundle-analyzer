@@ -2,17 +2,24 @@
   "/_not-found": [
     "/static/chunks/js1.js",
     "/static/chunks/js2.js",
-    "/static/chunks/app/_not-found1.js"
+    "/static/chunks/app/_not-found.js"
   ],
   "/about/page": [
     "/static/chunks/js1.js",
     "/static/chunks/js2.js",
-    "/static/chunks/app/about/page1.js"
+    "/static/chunks/app/about/page.js"
   ],
   "/page": [
     "/static/chunks/js1.js",
     "/static/chunks/js2.js",
     "/static/chunks/js3.js",
-    "/static/chunks/app/page1.js"
+    "/static/chunks/app/page.js"
+  ],
+  "/admin/page": [
+    "/static/chunks/js1.js",
+    "/static/chunks/js2.js",
+    "/static/chunks/js3.js",
+    "/static/chunks/js4.js",
+    "/static/chunks/app/admin/page.js"
   ]
 }

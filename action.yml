@@ -1,10 +1,10 @@
 name: "Next.js bundle analyzer"
 description: "Evaluate the size of the code bundle and assess the changes in its size."
-author: 'Andrii Maglovanyi'
+author: "Andrii Maglovanyi"
 
 branding:
-  icon: 'package'
-  color: 'blue'
+  icon: "package"
+  color: "blue"
 
 inputs:
   workflow-id:

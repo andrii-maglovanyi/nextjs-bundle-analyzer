@@ -15,11 +15,18 @@ export interface Report {
 }
 
 export const getAnalysis = (manifest: Manifest<Pages>): Report => {
-  const { layout, pages } = processBuildManifest(manifest);
+  const { layouts, pages } = processBuildManifest(manifest);
 
-  const fileToExclude = Object.keys(layout.jsFiles);
+  const combinedJsFiles: FileSizes = {};
+  const combinedCssFiles: FileSizes = {};
 
-  // Don't include the common files in the page sizes
+  Object.values(layouts).forEach((layout) => {
+    Object.assign(combinedJsFiles, layout.jsFiles);
+    Object.assign(combinedCssFiles, layout.cssFiles);
+  });
+
+  const fileToExclude = Object.keys(combinedJsFiles);
+
   const pagesWithExcludedFiles = Object.entries(pages).reduce(
     (acc, [page, files]) => ({
       ...acc,
@@ -32,8 +39,8 @@ export const getAnalysis = (manifest: Manifest<Pages>): Report => {
 
   return {
     chunks: {
-      css: layout.cssFiles,
-      js: layout.jsFiles,
+      css: combinedCssFiles,
+      js: combinedJsFiles,
     },
     pages: pageSizes,
   };
